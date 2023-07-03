@@ -18,6 +18,7 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@expo-google-fonts/karla": "^0.2.3",
     "expo": "^48.0.19",
     "expo-status-bar": "~1.4.4",
     "native-base": "3.4.0",
