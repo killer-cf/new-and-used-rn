@@ -1,14 +1,14 @@
 import { createBottomTabNavigator, BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { Ad } from '@screens/Ad';
-import { CreateAd } from '@screens/CreateAd';
-import { EditAd } from '@screens/EditAd';
-
-import { Home } from '@screens/Home';
-import { MyAds } from '@screens/MyAds';
-import { PreAd } from '@screens/PreAd';
 import { Icon, View, useTheme } from 'native-base';
 import { House, SignOut, Tag } from 'phosphor-react-native';
 import { Platform } from 'react-native';
+
+import { Ad } from '@screens/Ad';
+import { CreateAd } from '@screens/CreateAd';
+import { EditAd } from '@screens/EditAd';
+import { Home } from '@screens/Home';
+import { MyAds } from '@screens/MyAds';
+import { PreAd } from '@screens/PreAd';
 
 type AppRoutes = {
   home: undefined
