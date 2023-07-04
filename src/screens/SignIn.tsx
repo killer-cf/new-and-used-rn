@@ -1,7 +1,9 @@
 import { Center, Heading, Image, Text, VStack } from "native-base";
+import { MaterialIcons } from "@expo/vector-icons"
 
 import LogoImg from '../assets/logo.png'
 import { Input } from "../components/Input";
+import { Button } from "../components/Button";
 
 export function SignIn() {
   return (
@@ -30,6 +32,17 @@ export function SignIn() {
         <Input
           placeholder="Senha"
           secure
+          mb={8}
+        />
+
+        <Button text="Entrar" />
+
+        <Text mt={32} fontFamily={"body"} color={"gray.600"}>Ainda não tem acesso?</Text>
+
+        <Button
+          text="Criar uma conta" 
+          buttonColor="white-gray"
+          mt={3} 
         />
       </Center>
     </VStack>

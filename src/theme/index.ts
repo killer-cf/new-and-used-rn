@@ -14,7 +14,9 @@ export const theme = extendTheme({
     white: '#FFFFFF',
     red_light: '#EE7979',
     blue_light: '#EE7979',
-    blue: '#364D9D', 
+    blue: {
+      500: '#364D9D'
+    }, 
   },
   fonts: {
     heading: 'Karla_700Bold',
