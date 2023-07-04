@@ -1,10 +1,18 @@
+import { useNavigation } from "@react-navigation/native";
 import { Center, Heading, Image, Text, VStack } from "native-base";
 
 import LogoImg from '@assets/logo.png'
 import { Input } from "@components/Input"
 import { Button } from "@components/Button"
+import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 
 export function SignIn() {
+  const navigation = useNavigation<AuthNavigatorRoutesProps>()
+
+  function handleNavigateSignUp() {
+    navigation.navigate('signUp')
+  }
+
   return (
     <VStack pt={32} flex={1} bgColor={"gray.200"} px={10}>
       <Center>
@@ -41,7 +49,8 @@ export function SignIn() {
         <Button
           text="Criar uma conta" 
           buttonColor="white-gray"
-          mt={3} 
+          mt={3}
+          onPress={handleNavigateSignUp}
         />
       </Center>
     </VStack>
