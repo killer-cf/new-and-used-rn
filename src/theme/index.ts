@@ -1,4 +1,5 @@
 import { extendTheme } from 'native-base'
+import sizes from 'native-base/lib/typescript/theme/base/sizes'
 
 export const theme = extendTheme({
   colors: {
@@ -12,8 +13,12 @@ export const theme = extendTheme({
       100: '#F7F7F8'
     },
     white: '#FFFFFF',
-    red_light: '#EE7979',
-    blue_light: '#EE7979',
+    lightRed: {
+      500: '#EE7979'
+    },
+    lightBlue: {
+      500: '#647AC7'
+    },
     blue: {
       500: '#364D9D'
     }, 
@@ -33,5 +38,24 @@ export const theme = extendTheme({
   sizes: {
     14: 56,
     33: 148
+  },
+
+  components: {
+    Avatar: {
+      Badge:{
+        baseStyle: {
+          size: 'xl',
+          color: 'red'
+        },
+
+        sizes: {
+          xl: {
+            w: 50,
+            h: 50
+          }
+        }
+      }
+      
+    }
   }
 })
