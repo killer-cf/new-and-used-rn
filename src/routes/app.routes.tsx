@@ -6,7 +6,9 @@ import { EditAd } from '@screens/EditAd';
 import { Home } from '@screens/Home';
 import { MyAds } from '@screens/MyAds';
 import { PreAd } from '@screens/PreAd';
-import { View, useTheme } from 'native-base';
+import { Icon, View, useTheme } from 'native-base';
+import { House, SignOut, Tag } from 'phosphor-react-native';
+import { Platform } from 'react-native';
 
 type AppRoutes = {
   home: undefined
@@ -23,28 +25,50 @@ export type AuthNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>
 const { Navigator, Screen } = createBottomTabNavigator<AppRoutes>()
 
 export function AppRoutes(){
-  const { colors } = useTheme()
+  const { colors, sizes } = useTheme()
 
   return (
     <Navigator screenOptions={{ 
       headerShown: false,
       tabBarShowLabel: false,
-      tabBarActiveTintColor: colors.green[500],
-      tabBarInactiveTintColor: colors.gray[200],
+      tabBarActiveTintColor: colors.gray[600],
+      tabBarInactiveTintColor: colors.gray[400],
+      tabBarStyle: {
+        backgroundColor: colors.gray[100],
+        borderTopWidth: 0,
+        height: Platform.OS === "android" ? 'auto': 96,
+        paddingBottom: sizes[10],
+        paddingTop: sizes[6]
+      }
     }}>
       <Screen
         name='home'
         component={Home}
+        options={{
+          tabBarIcon: ({ color, focused }) => (
+            <Icon as={<House weight={focused ? 'bold': 'regular'} color={color} size={30}/>} />
+          )
+        }}
       />
 
       <Screen
         name='my_ads'
         component={MyAds}
+        options={{
+          tabBarIcon: ({ color, focused }) => (
+            <Icon as={<Tag weight={focused ? 'bold': 'regular'} color={color} size={30}/>} />
+          )
+        }}
       />
 
       <Screen
         name='logout'
         component={View}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Icon as={<SignOut weight={focused ? 'bold': 'regular'} color={colors.red[500]} size={30}/>} />
+          )
+        }}
         listeners={() => ({
           tabPress: (e) => {
               console.log(`sair`)
