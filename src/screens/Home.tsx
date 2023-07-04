@@ -1,14 +1,15 @@
-import { HStack, Heading, Pressable, Text, VStack, useTheme } from "native-base";
-import { ArrowRight, Plus, Tag } from "phosphor-react-native";
+import { Divider, HStack, Heading, Pressable, Text, VStack, useTheme } from "native-base";
+import { ArrowRight, MagnifyingGlass, Plus, Sliders, Tag } from "phosphor-react-native";
 
 import { Button } from "@components/Button";
 import { UserAvatar } from "@components/UserAvatar";
+import { Input } from "@components/Input";
 
 export function Home() {
   const { colors } = useTheme()
 
   return (
-    <VStack bg={"gray.100"} safeAreaTop flex={1} px={6} pt={5}>
+    <VStack bg={"gray.200"} safeAreaTop flex={1} px={6} pt={5}>
       <HStack>
         <UserAvatar siz="md" source={{ uri: 'https://github.com/killer-cf.png'}} mr={3} />
         <VStack flex={1}>
@@ -40,6 +41,29 @@ export function Home() {
           </HStack>  
         </Pressable>
       </HStack>
+
+      <Heading color={"gray.500"} fontFamily={"body"} fontSize={'sm'} mt={8} mb={3}>
+        Compre produtos variados
+      </Heading>
+      <Input
+        placeholder="Buscar anúncio"
+        InputRightElement={
+          <HStack h={5} alignItems={"center"}>
+            <Pressable>
+              <MagnifyingGlass weight="bold" color={colors.gray[600]} />
+            </Pressable>
+            <Divider 
+              orientation="vertical"
+              color={"gray.700"}
+              thickness="2"
+              mx={3}
+            />
+            <Pressable mr={4}>
+              <Sliders weight="bold" color={colors.gray[600]} />
+            </Pressable>
+          </HStack>
+        }
+      />
     </VStack>
   )
 }
