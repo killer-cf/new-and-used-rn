@@ -1,9 +1,8 @@
 import { Center, Heading, Image, Text, VStack } from "native-base";
-import { MaterialIcons } from "@expo/vector-icons"
 
-import LogoImg from '../assets/logo.png'
-import { Input } from "../components/Input";
-import { Button } from "../components/Button";
+import LogoImg from '@assets/logo.png'
+import { Input } from "@components/Input"
+import { Button } from "@components/Button"
 
 export function SignIn() {
   return (

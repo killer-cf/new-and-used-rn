@@ -1,9 +1,9 @@
 import { Center, Heading, Image, Text, VStack, View } from "native-base";
 
-import LogoImg from '../assets/logo.png'
-import { UserAvatar } from "../components/UserAvatar";
-import { Input } from "../components/Input";
-import { Button } from "../components/Button";
+import LogoImg from '@assets/logo.png'
+import { UserAvatar } from "@components/UserAvatar";
+import { Input } from "@components/Input";
+import { Button } from "@components/Button";
 
 export function SignUp() {
   return (

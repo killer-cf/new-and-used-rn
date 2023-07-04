@@ -1,5 +1,4 @@
 import { extendTheme } from 'native-base'
-import sizes from 'native-base/lib/typescript/theme/base/sizes'
 
 export const theme = extendTheme({
   colors: {
