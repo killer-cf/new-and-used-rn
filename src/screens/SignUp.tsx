@@ -1,13 +1,13 @@
-import { Avatar, Center, Heading, Image, Text, VStack, View } from "native-base";
+import { Center, Heading, Image, Text, VStack, View } from "native-base";
 
 import LogoImg from '../assets/logo.png'
-import defaultUserPhoto from '../assets/userPhotoDefault.png'
-import { Horse, Heart, Cube, User, PencilSimpleLine } from 'phosphor-react-native';
 import { UserAvatar } from "../components/UserAvatar";
+import { Input } from "../components/Input";
+import { Button } from "../components/Button";
 
 export function SignUp() {
   return (
-    <VStack pt={24} px={12}>
+    <VStack pt={20} px={12} flex={1} bgColor={"gray.200"}>
       <Center>
         <Image 
           source={LogoImg}
@@ -23,8 +23,48 @@ export function SignUp() {
         </Text>
       </Center>
 
-      <Center mt={12}>
-        <UserAvatar siz={"2xl"} source={{ uri: 'https://github.comkiller-cf.png'}}/>
+      <Center mt={10}>
+        <UserAvatar siz={"2xl"} source={{ uri: 'https://github.com/killer-cf.png'}} mb={4}/>
+
+        <Input  
+          placeholder="Nome"
+          mb={4}
+        />
+
+        <Input  
+          placeholder="E-mail"
+          mb={4}
+        />
+
+        <Input  
+          placeholder="Telefone"
+          mb={4}
+        />
+
+        <Input  
+          placeholder="Senha"
+          secure
+          mb={4}
+        />
+
+        <Input  
+          placeholder="Confirmar senha"
+          secure
+          mb={6}
+        />
+
+        <Button 
+          text="Criar"
+          buttonColor="gray"
+        />
+
+        <Text mt={10} fontFamily={"body"} color={"gray.600"}>Já tem uma conta?</Text>
+
+        <Button
+          text="Ir para login" 
+          buttonColor="white-gray"
+          mt={3} 
+        />
       </Center>
     </VStack>
   )

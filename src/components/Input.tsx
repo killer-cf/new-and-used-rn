@@ -18,7 +18,7 @@ export function Input({secure = false, ...rest}: Props) {
       placeholderTextColor={"gray.400"}
       color={"gray.600"}
       fontSize={"md"}
-      rounded={'sm'}
+      rounded={"lg"}
       borderWidth={0}
       _focus={{
         bg: 'gray.700',

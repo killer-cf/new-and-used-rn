@@ -19,6 +19,7 @@ export function Button({ icon, buttonColor = 'blue', text, ...rest}: Props) {
       w={"full"}
       p={3}
       bgColor={COLORS[buttonColor]}
+      rounded={"lg"}
       {...rest}
     > 
       <HStack
