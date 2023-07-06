@@ -1,6 +1,7 @@
 import { Box, Heading, IBoxProps, Image, Text } from "native-base";
 
 import BikeImg from "@assets/bike.png"
+import { Tag } from "./Tag";
 
 type Props = IBoxProps & {}
 
@@ -19,6 +20,7 @@ export function AdCard({...rest }: Props) {
           w={"full"}    
           rounded={'lg'} 
         />
+        <Tag title="USADO" />
       </Box>
       <Text mt={1} color={"gray.600"} fontSize={'sm'} fontFamily={"body"}>Bicicleta</Text>
       <Heading color={"gray.700"} fontSize={'md'} fontFamily={"heading"}>R$ 59,90</Heading>
