@@ -2,13 +2,14 @@ import { Avatar, IAvatarProps } from "native-base";
 import { User } from "phosphor-react-native";
 
 const IconSize = {
+  xs: 8,
   sm: 12,
   md: 30,
   '2xl': 70,
 } as const
 
 type Props = IAvatarProps & {
-  siz: '2xl' | 'md' | 'sm'
+  siz: '2xl' | 'md' | 'sm' | 'xs'
 }
 
 export function UserAvatar({ siz = 'md', ...rest}: Props) {

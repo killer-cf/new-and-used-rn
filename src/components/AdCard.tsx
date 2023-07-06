@@ -2,6 +2,7 @@ import { Box, Heading, IBoxProps, Image, Text } from "native-base";
 
 import BikeImg from "@assets/bike.png"
 import { Tag } from "./Tag";
+import { UserAvatar } from "./UserAvatar";
 
 type Props = IBoxProps & {}
 
@@ -19,6 +20,13 @@ export function AdCard({...rest }: Props) {
           alt="nome do produto"
           w={"full"}    
           rounded={'lg'} 
+        />
+        <UserAvatar
+          source={{ uri: 'https://github.com/killer-cf.png'}}
+          siz="xs" 
+          position={"absolute"} 
+          top={1}
+          left={1}
         />
         <Tag title="USADO" />
       </Box>
