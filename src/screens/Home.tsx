@@ -1,12 +1,26 @@
-import { Divider, HStack, Heading, Pressable, Text, VStack, useTheme } from "native-base";
+import { Box, Center, Divider, FlatList, Flex, HStack, Heading, Pressable, Spacer, Text, VStack, useTheme } from "native-base";
 import { ArrowRight, MagnifyingGlass, Plus, Sliders, Tag } from "phosphor-react-native";
 
 import { Button } from "@components/Button";
 import { UserAvatar } from "@components/UserAvatar";
 import { Input } from "@components/Input";
+import { AdCard } from "@components/AdCard";
 
 export function Home() {
   const { colors } = useTheme()
+  const ads = [1,2,3,]
+
+  const groupAdsPairs = (item: any) => {
+    const pares = [];
+    for (let i = 0; i < item.length; i += 2) {
+      const actualProduct = item[i];
+      const nextProduct = item[i + 1];
+      pares.push([actualProduct, nextProduct]);
+    }
+    return pares;
+  }
+
+  const adsPairs = groupAdsPairs(ads)
 
   return (
     <VStack bg={"gray.200"} safeAreaTop flex={1} px={6} pt={5}>
@@ -64,6 +78,19 @@ export function Home() {
           </HStack>
         }
       />
+
+      <FlatList 
+        data={adsPairs}
+        keyExtractor={(item) => item.toString()}
+        renderItem={({ item }) => (
+          <HStack>
+            {item[0] && <AdCard mr={4} />}
+            {item[1] ? <AdCard /> : <Box flex={1} />}
+          </HStack>
+        )}
+        mt={6}
+      />
+
     </VStack>
   )
 }
