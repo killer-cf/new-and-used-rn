@@ -1,9 +1,12 @@
+import { Filters } from '@components/Filters'
 import {
+  BottomSheetBackdrop,
   BottomSheetModal,
   BottomSheetModalProvider,
+  useBottomSheet,
 } from '@gorhom/bottom-sheet'
-import { Text, View } from 'native-base'
-import { ReactNode, createContext, useCallback, useMemo, useRef } from 'react'
+import { useTheme } from 'native-base'
+import { ReactNode, createContext, useCallback, useMemo, useRef, useState } from 'react'
 
 type ModalContextData = {
   openModal: () => void
@@ -16,13 +19,31 @@ type Props = {
 }
 
 export function FilterModalProvider({children}: Props) {
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null)
 
-  const snapPoints = useMemo(() => ['25%', '50%'], []);
+  const snapPoints = useMemo(() => ['25%', '72%'], [])
 
   const openModal = useCallback(() => {
-    bottomSheetModalRef.current?.present();
-  }, []);
+    bottomSheetModalRef.current?.present()
+  }, [])
+
+  function closeModal() {
+    bottomSheetModalRef.current?.close()
+  }
+
+  const renderBackdrop = useCallback(
+    (props: any) => (
+      <BottomSheetBackdrop
+        opacity={0.7}
+        {...props}
+        disappearsOnIndex={-1}
+        appearsOnIndex={1}
+      />
+    ),
+    []
+  )
+
+  const { colors } = useTheme()
 
   return (
     <BottomSheetModalProvider>
@@ -32,10 +53,14 @@ export function FilterModalProvider({children}: Props) {
           ref={bottomSheetModalRef}
           index={1}
           snapPoints={snapPoints}
+          backdropComponent={renderBackdrop}
+          backgroundStyle={{ backgroundColor: colors.gray[200]}}
+          handleIndicatorStyle={{ width: 56, backgroundColor: colors.gray[400], marginTop: 8}}
+          style={{ zIndex: 20}}
         >
-          <View flex={1} alignItems={'center'}  bg={'green.300'} >
-            <Text>Awesome 🎉</Text>
-          </View>
+          <Filters
+            onCloseModal={closeModal}
+          />
         </BottomSheetModal>
       </ModalContext.Provider>
     </BottomSheetModalProvider>

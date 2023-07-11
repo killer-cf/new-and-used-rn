@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Box, Divider, HStack, Heading, Pressable, ScrollView, Text, VStack, useTheme } from "native-base";
+import { Box, Divider, HStack, Heading, Pressable, ScrollView, Text, VStack, View, useTheme } from "native-base";
 import { ArrowRight, MagnifyingGlass, Plus, Sliders, Tag } from "phosphor-react-native";
 
 import { Button } from "@components/Button";
@@ -23,7 +23,7 @@ export function Home() {
   }
 
   return (
-      <VStack bg={"gray.200"} safeAreaTop flex={1} px={6} pt={5}>
+      <VStack bg={"gray.200"} safeAreaTop flex={1} px={6} pt={5} >
         <ScrollView showsVerticalScrollIndicator={false}>
           <HStack>
             <UserAvatar siz="md" source={{ uri: 'https://github.com/killer-cf.png'}} mr={3} />
