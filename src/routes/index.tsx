@@ -2,6 +2,7 @@ import { DefaultTheme, NavigationContainer } from "@react-navigation/native";
 import { AuthRoutes } from "./auth.routes";
 import { Box, useTheme } from "native-base";
 import { AppRoutes } from "./app.routes";
+import { FilterModalProvider } from "@contexts/FilterModalProvider";
 
 export function Routes() {
   const { colors } = useTheme()
@@ -10,10 +11,12 @@ export function Routes() {
   theme.colors.background = colors.gray[200]
 
   return (
-    <Box flex={1} bg={'gray.700'}>
-      <NavigationContainer theme={theme}>
-        <AppRoutes />
-      </NavigationContainer>
-    </Box>
+    <FilterModalProvider>
+      <Box flex={1} bg={'gray.700'}>
+        <NavigationContainer theme={theme}>
+          <AppRoutes />
+        </NavigationContainer>
+      </Box>
+    </FilterModalProvider>
   )
 }
