@@ -1,35 +1,38 @@
-import { Center, HStack, Text, useTheme } from "native-base";
-import { IHStackProps } from "native-base/lib/typescript/components/primitives/Stack/HStack";
+import { Center, HStack, IPressableProps, Pressable, Text, useTheme } from "native-base";
 import { X } from "phosphor-react-native";
 
-type Props = IHStackProps & {
+type Props = IPressableProps & {
   selected?: boolean
-  title: 'NEW' | 'USED'
+  title: 'NOVO' | 'USADO'
 }
 
 export function FilterTag({ title, selected = false, ...rest}: Props) {
   const { colors } = useTheme()
 
   return (
-    <HStack 
-      bg={selected ? "lightBlue.500": "gray.300"}
+    <Pressable 
       px={2}
       rounded={"full"}
       w={19}
       h={7}
       alignItems={"center"}
       justifyContent={"center"}
+      bg={selected ? "lightBlue.500": "gray.300"}
       {...rest}
     >
-      <Text fontSize={'xs'} fontFamily={"heading"} color={selected ? "white" : "gray.500"} pr={2}>
+      <HStack
+      >
+        <Text fontSize={'xs'} fontFamily={"heading"} color={selected ? "white" : "gray.500"} >
         {title}
       </Text>
       {
         selected &&
-          <Center rounded={"full"} w={4} h={4} bg={"gray.200"}>
+          <Center rounded={"full"} w={4} h={4} bg={"gray.200"} ml={2}>
             <X color={colors.lightBlue[500]} size={10} weight="bold" />
           </Center>
       }
-    </HStack>
+      </HStack>
+      
+    </Pressable>
   )
 }
