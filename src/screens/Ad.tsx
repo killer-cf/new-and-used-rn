@@ -1,14 +1,17 @@
-import { Box, HStack, Heading, Image, ScrollView, Text, VStack } from "native-base";
+import { Box, HStack, Heading, Image, ScrollView, Text, VStack, useTheme } from "native-base";
 
 import BikeImg from "@assets/bike.png"
 import { Header } from "@components/Header";
 import { MultiStep } from "@components/MultiStep";
 import { UserAvatar } from "@components/UserAvatar";
 import { Tag } from "@components/Tag";
-import { Bank, Barcode, CreditCard, Money, QrCode } from "phosphor-react-native";
+import { Bank, Barcode, CreditCard, Money, QrCode, WhatsappLogo } from "phosphor-react-native";
 import { Button } from "@components/Button";
+import { color } from "react-native-reanimated";
 
 export function Ad() {
+  const { colors } = useTheme()
+
   return (
     <VStack bg={"gray.200"} safeAreaTop flex={1}  >
       <Header px={6} pt={5} mb={3}/>
@@ -101,7 +104,11 @@ export function Ad() {
               <Text pt={1} fontSize={'sm'} color={"lightBlue.500"} fontFamily={"heading"}>R$ </Text>
               <Heading fontSize={'2xl'} color={"lightBlue.500"} fontFamily={"heading"}>1.200,00</Heading>
             </HStack>
-            <Button text="Entrar em contato" flex={1} />
+            <Button 
+              text="Entrar em contato" 
+              flex={1} 
+              icon={<WhatsappLogo weight="fill" color={colors.gray[200]}/> }
+            />
           </HStack>
         </VStack>
       </ScrollView>
