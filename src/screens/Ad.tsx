@@ -12,7 +12,7 @@ export function Ad() {
   return (
     <VStack bg={"gray.200"} safeAreaTop flex={1}  >
       <Header px={6} pt={5} mb={3}/>
-      <ScrollView contentContainerStyle={{ paddingBottom: 80}}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 300}}>
         <Box
         w={"full"}
         h={'50%'}
