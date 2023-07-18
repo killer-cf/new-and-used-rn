@@ -80,7 +80,8 @@ export function AppRoutes(){
         name='ad'
         component={Ad}
         options={{
-          tabBarButton: () => null
+          tabBarButton: () => null,
+          tabBarStyle: { display: "none" },
         }}
       />
 

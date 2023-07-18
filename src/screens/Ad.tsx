@@ -99,7 +99,7 @@ export function Ad() {
             </Text>
           </HStack>
 
-          <HStack mt={12}>
+          <HStack mt={10}>
             <HStack flex={1}>
               <Text pt={1} fontSize={'sm'} color={"lightBlue.500"} fontFamily={"heading"}>R$ </Text>
               <Heading fontSize={'2xl'} color={"lightBlue.500"} fontFamily={"heading"}>1.200,00</Heading>
