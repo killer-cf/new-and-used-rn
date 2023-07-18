@@ -1,12 +1,20 @@
-import { Box, Heading, IBoxProps, Image, Text } from "native-base";
+import { Box, Heading, IBoxProps, Image, Pressable, Text } from "native-base";
 
 import BikeImg from "@assets/bike.png"
 import { Tag } from "./Tag";
 import { UserAvatar } from "./UserAvatar";
+import { useNavigation } from "@react-navigation/native";
+import { AppNavigatorRoutesProps } from "@routes/app.routes";
 
 type Props = IBoxProps & {}
 
 export function AdCard({...rest }: Props) {
+  const navigation = useNavigation<AppNavigatorRoutesProps>()
+
+  function handleGoAdPage() {
+    navigation.navigate('ad')
+  }
+
   return (
     <Box 
       flex={1}
@@ -14,7 +22,7 @@ export function AdCard({...rest }: Props) {
       mb={4}
       {...rest}
     >
-      <Box w={"full"}>
+      <Pressable w={"full"} onPress={handleGoAdPage}>
         <Image 
           source={BikeImg}
           alt="nome do produto"
@@ -29,7 +37,7 @@ export function AdCard({...rest }: Props) {
           left={1}
         />
         <Tag title="USADO" />
-      </Box>
+      </Pressable>
       <Text mt={1} color={"gray.600"} fontSize={'sm'} fontFamily={"body"}>Bicicleta</Text>
       <Heading color={"gray.700"} fontSize={'md'} fontFamily={"heading"}>R$ 59,90</Heading>
     </Box>

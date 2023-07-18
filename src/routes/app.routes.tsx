@@ -20,7 +20,7 @@ type AppRoutes = {
   pre_ad: undefined
 }
 
-export type AuthNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>
+export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>
 
 const { Navigator, Screen } = createBottomTabNavigator<AppRoutes>()
 
