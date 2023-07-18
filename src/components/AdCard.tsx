@@ -36,7 +36,12 @@ export function AdCard({...rest }: Props) {
           top={1}
           left={1}
         />
-        <Tag title="USADO" />
+        <Tag 
+          title="USADO" 
+          position={"absolute"} 
+          right={1}
+          top={1} 
+        />
       </Pressable>
       <Text mt={1} color={"gray.600"} fontSize={'sm'} fontFamily={"body"}>Bicicleta</Text>
       <Heading color={"gray.700"} fontSize={'md'} fontFamily={"heading"}>R$ 59,90</Heading>

@@ -1,20 +1,18 @@
-import { Box, Text } from "native-base";
+import { Box, IBoxProps, Text } from "native-base";
 
-type Props = {
+type Props = IBoxProps & {
   title: 'USADO' | 'NOVO'
 }
 
-export function Tag({ title }: Props) {
+export function Tag({ title, ...rest }: Props) {
   return (
     <Box 
-      position={"absolute"} 
-      right={1}
-      top={1}
       bg={title === 'USADO' ? "gray.600": "blue.500"}
       px={2}
       rounded={"full"}
+      {...rest}
     >
-      <Text fontSize={'xxs'} fontFamily={"body"} color={"white"}>
+      <Text fontSize={'xxs'} fontFamily={"body"} color={"white"} textAlign={"center"}>
         {title}
       </Text>
     </Box>
