@@ -6,9 +6,11 @@ import { UserAvatar } from "./UserAvatar";
 import { useNavigation } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
 
-type Props = IBoxProps & {}
+type Props = IBoxProps & {
+  isAdDisabled?: boolean
+}
 
-export function AdCard({...rest }: Props) {
+export function AdCard({ isAdDisabled = false, ...rest }: Props) {
   const navigation = useNavigation<AppNavigatorRoutesProps>()
 
   function handleGoAdPage() {
@@ -16,7 +18,7 @@ export function AdCard({...rest }: Props) {
   }
 
   return (
-    <Box 
+    <Box
       flex={1}
       overflow={"hidden"}
       mb={4}
@@ -42,6 +44,22 @@ export function AdCard({...rest }: Props) {
           right={1}
           top={1} 
         />
+        {
+          isAdDisabled &&
+          <>
+            <Box position={"absolute"} w={"full"} h={"full"} bg={"gray.700"} opacity={0.3} />         
+            <Text 
+              position={"absolute"}
+              bottom={1}
+              left={1} 
+              color={"gray.100"}
+              fontFamily={"heading"}
+              fontSize={"xs"}
+            >
+              ANÚNCIO DESATIVADO
+            </Text>
+          </>  
+        }
       </Pressable>
       <Text mt={1} color={"gray.600"} fontSize={'sm'} fontFamily={"body"}>Bicicleta</Text>
       <Heading color={"gray.700"} fontSize={'md'} fontFamily={"heading"}>R$ 59,90</Heading>
