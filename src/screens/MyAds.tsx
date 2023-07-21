@@ -1,5 +1,6 @@
 import { Header } from "@components/Header";
-import { Box, CheckIcon, HStack, Select, Text, VStack } from "native-base";
+import { Select } from "@components/Select";
+import { Box, CheckIcon, HStack, Text, VStack } from "native-base";
 import { Plus } from "phosphor-react-native";
 import { useState } from "react";
 
@@ -19,19 +20,10 @@ export function MyAds() {
       />
 
       <HStack mt={6} justifyContent={"space-between"} w={"full"}>
-        <Text color={"gray.600"} fontSize={'sm'}>9 anúncios</Text>
-        <Box maxW="300">
-        <Select selectedValue={service} minWidth="200" accessibilityLabel="Choose Service" placeholder="Choose Service" _selectedItem={{
-        bg: "teal.600",
-        endIcon: <CheckIcon size="5" />
-      }} mt={1} onValueChange={itemValue => setService(itemValue)}>
-          <Select.Item label="UX Research" value="ux" />
-          <Select.Item label="Web Development" value="web" />
-          <Select.Item label="Cross Platform Development" value="cross" />
-          <Select.Item label="UI Designing" value="ui" />
-          <Select.Item label="Backend Development" value="backend" />
-        </Select>
-      </Box>
+        <Text flex={1} color={"gray.600"} fontSize={'sm'}>9 anúncios</Text>
+
+        <Select selectOptions={['Todos', 'Ativos', 'Inativos']} defaultOption="Todos"/>
+
       </HStack>
     </VStack>
   )
