@@ -1,4 +1,4 @@
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { Box, Checkbox, HStack, Heading, Icon, Image, Pressable, Radio, ScrollView, Switch, Text, TextArea, VStack, useTheme } from "native-base";
 
 import { Header } from "@components/Header";
@@ -8,6 +8,7 @@ import ProductImage from "@assets/product.png"
 import { Input } from "@components/Input";
 import { useState } from "react";
 import { Button } from "@components/Button";
+import { AppNavigatorRoutesProps } from "@routes/app.routes";
 
 type AdFormParams = {
   id: string
@@ -18,8 +19,14 @@ export function AdForm() {
   const [radioSelected, setRadioSelected] = useState('')
   const route = useRoute()
   const { colors } = useTheme()
+  
+  const navigation = useNavigation<AppNavigatorRoutesProps>()
 
   const params  = route.params as AdFormParams
+
+  function handleGoPreview() {
+    navigation.navigate('pre_ad')
+  }
 
   return (
     <VStack bg={"gray.200"} safeAreaTop flex={1} px={6} pt={5} >
@@ -170,7 +177,7 @@ export function AdForm() {
 
         <HStack mt={12}>
           <Button text="Cancelar" buttonColor="white-gray" flex={1} mr={3}/>
-          <Button text="Avançar" buttonColor="gray" flex={1}/>
+          <Button text="Avançar" buttonColor="gray" flex={1} onPress={handleGoPreview}/>
         </HStack>
       </ScrollView>
     </VStack>

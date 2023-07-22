@@ -90,7 +90,8 @@ export function AppRoutes(){
         name='pre_ad'
         component={PreAd}
         options={{
-          tabBarButton: () => null
+          tabBarButton: () => null,
+          tabBarStyle: { display: "none" },
         }}
       />
 

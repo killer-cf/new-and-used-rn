@@ -4,6 +4,7 @@ import { ReactNode } from "react"
 const COLORS = {
   gray: 'gray.700',
   blue: 'blue.500',
+  'light-blue': 'lightBlue.500',
   'white-gray': 'gray.300'
 } as const
 
