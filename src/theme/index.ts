@@ -38,6 +38,7 @@ export const theme = extendTheme({
   sizes: {
     14: 56,
     19: 76,
+    25: 100,
     28: 112,
     30: 120,
     33: 148
