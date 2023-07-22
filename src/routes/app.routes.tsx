@@ -4,19 +4,20 @@ import { House, SignOut, Tag } from 'phosphor-react-native';
 import { Platform } from 'react-native';
 
 import { Ad } from '@screens/Ad';
-import { CreateAd } from '@screens/CreateAd';
-import { EditAd } from '@screens/EditAd';
 import { Home } from '@screens/Home';
 import { MyAds } from '@screens/MyAds';
 import { PreAd } from '@screens/PreAd';
+import { AdForm } from '@screens/AdForm';
 
 type AppRoutes = {
   home: undefined
   ad: undefined
   logout: undefined
   my_ads: undefined
-  create_ad: undefined
-  edit_ad: undefined
+  ad_form?: {
+    id: string
+    name: string
+  }
   pre_ad: undefined
 }
 
@@ -94,18 +95,11 @@ export function AppRoutes(){
       />
 
       <Screen
-        name='edit_ad'
-        component={EditAd}
+        name='ad_form'
+        component={AdForm}
         options={{
-          tabBarButton: () => null
-        }}
-      />
-
-      <Screen
-        name='create_ad'
-        component={CreateAd}
-        options={{
-          tabBarButton: () => null
+          tabBarButton: () => null,
+          tabBarStyle: { display: "none" },
         }}
       />
 

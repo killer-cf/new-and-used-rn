@@ -1,13 +1,17 @@
 import { Box, HStack, ScrollView, Text, VStack } from "native-base";
 import { Plus } from "phosphor-react-native";
+import { useNavigation } from "@react-navigation/native";
 
 import { Header } from "@components/Header";
 import { Select } from "@components/Select";
 import { AdCard } from "@components/AdCard";
+import { AppNavigatorRoutesProps } from "@routes/app.routes";
 
 export function MyAds() {
   const selectOptions = ['Todos', 'Ativos', 'Inativos']  
   const ads = [1,2,3,4,5]
+  
+  const navigation = useNavigation<AppNavigatorRoutesProps>()
 
   const myAdsPairs: any = []
   for (let i = 0; i < ads.length; i += 2) {
@@ -15,7 +19,7 @@ export function MyAds() {
   }
 
   function handlePressPlus() {
-    console.log("Plus clicado")
+    navigation.navigate('ad_form')
   }
 
   return (
