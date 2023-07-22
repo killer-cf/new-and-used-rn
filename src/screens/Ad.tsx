@@ -1,24 +1,25 @@
 import { Box, HStack, Heading, Image, ScrollView, Text, VStack, useTheme } from "native-base";
+import { Bank, Barcode, CreditCard, Money, PencilSimpleLine, Power, QrCode, Trash, WhatsappLogo } from "phosphor-react-native";
 
 import BikeImg from "@assets/bike.png"
 import { Header } from "@components/Header";
 import { MultiStep } from "@components/MultiStep";
 import { UserAvatar } from "@components/UserAvatar";
 import { Tag } from "@components/Tag";
-import { Bank, Barcode, CreditCard, Money, QrCode, WhatsappLogo } from "phosphor-react-native";
 import { Button } from "@components/Button";
-import { color } from "react-native-reanimated";
 
 export function Ad() {
   const { colors } = useTheme()
+  const isAdOwner = true
+  const isAdActive = false
 
   return (
     <VStack bg={"gray.200"} safeAreaTop flex={1}  >
-      <Header px={6} pt={5} mb={3}/>
-      <ScrollView contentContainerStyle={{ paddingBottom: 300}}>
+      <Header px={6} pt={5} mb={3} iconRight={isAdOwner && <PencilSimpleLine />}/>
+      <ScrollView contentContainerStyle={{ paddingBottom: 30}}>
         <Box
         w={"full"}
-        h={'50%'}
+        h={'270px'}
         >
           <Image 
             source={BikeImg}
@@ -29,6 +30,21 @@ export function Ad() {
             bg={"green.200"}
           />
           <MultiStep size={3} currentStep={1}/>
+          {
+          !isAdActive &&
+          <>
+            <Box position={"absolute"} w={"full"} h={"full"} bg={"gray.700"} opacity={0.5} />        
+            <Box 
+              position={"absolute"}
+              alignItems={"center"}
+              justifyContent={"center"}
+              w={'full'}
+              h={"full"}
+            >
+              <Text color={"gray.100"} fontFamily={"heading"} fontSize={"md"}>ANÚNCIO DESATIVADO</Text> 
+            </Box>
+          </>  
+        }
         </Box>
         <VStack mt={5} px={6}>
           <HStack mb={6} alignItems={"center"}>
@@ -98,18 +114,29 @@ export function Ad() {
               Depósito Bancário
             </Text>
           </HStack>
-
-          <HStack mt={10}>
-            <HStack flex={1}>
-              <Text pt={1} fontSize={'sm'} color={"lightBlue.500"} fontFamily={"heading"}>R$ </Text>
-              <Heading fontSize={'2xl'} color={"lightBlue.500"} fontFamily={"heading"}>1.200,00</Heading>
-            </HStack>
-            <Button 
-              text="Entrar em contato" 
-              flex={1} 
-              icon={<WhatsappLogo weight="fill" color={colors.gray[200]}/> }
-            />
-          </HStack>
+          {
+            isAdOwner ? (
+              <VStack mt={8}>
+                { isAdActive ? 
+                    <Button text="Desativar anúncio" buttonColor="gray" icon={<Power color={colors.gray[100]} />} mb={3}/> :
+                    <Button text="Reativar anúncio" buttonColor="blue" icon={<Power color={colors.gray[100]} />} mb={3}/>
+                }    
+                <Button text="Excluir anúncio" buttonColor="white-gray" icon={<Trash />}/>
+              </VStack>
+            ) : (
+              <HStack mt={8}>
+                <HStack flex={1}>
+                  <Text pt={1} fontSize={'sm'} color={"lightBlue.500"} fontFamily={"heading"}>R$ </Text>
+                  <Heading fontSize={'2xl'} color={"lightBlue.500"} fontFamily={"heading"}>1.200,00</Heading>
+                </HStack>
+                <Button 
+                  text="Entrar em contato" 
+                  flex={1} 
+                  icon={<WhatsappLogo weight="fill" color={colors.gray[200]}/> }
+                />
+              </HStack>
+            )
+          }    
         </VStack>
       </ScrollView>
     </VStack>
