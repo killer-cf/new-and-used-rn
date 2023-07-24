@@ -1,5 +1,8 @@
 import { useNavigation } from "@react-navigation/native";
 import { Center, Heading, Image, Text, VStack } from "native-base";
+import { Controller, useForm } from "react-hook-form";
+import * as yup from "yup"
+import { yupResolver } from "@hookform/resolvers/yup"
 
 import LogoImg from '@assets/logo.png'
 import { UserAvatar } from "@components/UserAvatar";
@@ -7,11 +10,29 @@ import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 
+const signUpFormSchema = yup.object({
+  name: yup.string().required('Nome deve ser informado'),
+  email: yup.string().required('E-mail deve ser informado'),
+  phone: yup.string().required('Telefone deve ser informado'),
+  password: yup.string().required('Senha deve ser informado'),
+  confirm_password: yup.string().required('Confirmar senha deve ser informado')
+})
+
+type SignUpFormData = yup.InferType<typeof signUpFormSchema>
+
 export function SignUp() {
+  const { control, handleSubmit } = useForm<SignUpFormData>({
+    resolver: yupResolver(signUpFormSchema)
+  })
+
   const navigation = useNavigation<AuthNavigatorRoutesProps>()
 
   function handleNavigateSignIn() {
     navigation.navigate('signIn')
+  }
+
+  function handleSignUp(data: SignUpFormData) {
+    console.log(data)
   }
 
   return (
@@ -34,35 +55,76 @@ export function SignUp() {
       <Center mt={10}>
         <UserAvatar siz={"2xl"} source={{ uri: 'https://github.com/killer-cf.png'}} mb={4}/>
 
-        <Input  
-          placeholder="Nome"
-          mb={4}
+        <Controller 
+          name="name"
+          control={control}
+          render={({ field: { onChange, value }}) => (
+            <Input
+              placeholder="Nome"
+              value={value}
+              onChangeText={onChange}  
+              mb={4}
+            />
+          )}
         />
 
-        <Input  
-          placeholder="E-mail"
-          mb={4}
+        <Controller 
+          name="email"
+          control={control}
+          render={({ field: { onChange, value }}) => (
+            <Input
+              placeholder="E-mail"
+              value={value}
+              onChangeText={onChange}
+              mb={4}
+            />
+          )}
         />
 
-        <Input  
-          placeholder="Telefone"
-          mb={4}
+        <Controller 
+          name="phone"
+          control={control}
+          render={({ field: { onChange, value }}) => (
+            <Input
+              placeholder="Telefone"
+              value={value}
+              onChangeText={onChange}  
+              mb={4}
+            />
+          )}
         />
 
-        <Input  
-          placeholder="Senha"
-          secure
-          mb={4}
+        <Controller 
+          name="password"
+          control={control}
+          render={({ field: { onChange, value }}) => (
+            <Input
+              placeholder="Senha"
+              secure
+              value={value}
+              onChangeText={onChange}  
+              mb={4}
+            />
+          )}
         />
 
-        <Input  
-          placeholder="Confirmar senha"
-          secure
-          mb={6}
+        <Controller 
+          name="confirm_password"
+          control={control}
+          render={({ field: { onChange, value }}) => (
+            <Input
+              placeholder="Confirmar senha"
+              secure
+              value={value}
+              onChangeText={onChange}  
+              mb={4}
+            />
+          )}
         />
 
         <Button 
           text="Criar"
+          onPress={handleSubmit(handleSignUp)}
           buttonColor="gray"
         />
 
