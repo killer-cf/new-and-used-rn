@@ -11,9 +11,9 @@ import { Button } from "@components/Button";
 import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 
 const signUpFormSchema = yup.object({
-  name: yup.string().required('Nome deve ser informado').length(3, 'Nome dever conter pelo menos 3 caracteres'),
+  name: yup.string().required('Nome deve ser informado').min(3, 'Nome dever conter pelo menos 3 caracteres'),
   email: yup.string().required('E-mail deve ser informado').email('Escreva um formato de email válido'),
-  phone: yup.string().required('Telefone deve ser informado'),
+  phone: yup.string().required('Telefone deve ser informado').matches(/(\(?\d{2}\)?\s)?(\d{8,9})/, 'formato invalido'),
   password: yup.string().required('Senha deve ser informado').min(6, 'Senha deve conter no mínimo 6 caracteres'),
   password_confirm: yup.string().required('Confirme sua senha').oneOf([yup.ref('password')], 'As senhas não conferem.')
 })
@@ -31,7 +31,7 @@ export function SignUp() {
     navigation.navigate('signIn')
   }
 
-  console.log(errors.password_confirm)
+  console.log(errors.phone)
   function handleSignUp(data: SignUpFormData) {
     console.log(data)
   }
@@ -88,6 +88,7 @@ export function SignUp() {
           render={({ field: { onChange, value }}) => (
             <Input
               placeholder="Telefone"
+              keyboardType="numeric"
               value={value}
               onChangeText={onChange}  
               mb={4}
