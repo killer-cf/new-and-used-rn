@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import { Center, Heading, Image, Text, VStack } from "native-base";
+import { Center, Heading, Image, Text, VStack, useToast } from "native-base";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
@@ -9,6 +9,8 @@ import { UserAvatar } from "@components/UserAvatar";
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
+import { api } from "@services/api";
+import { AppError } from "@utils/AppError";
 
 const signUpFormSchema = yup.object({
   name: yup.string().required('Nome deve ser informado').min(3, 'Nome dever conter pelo menos 3 caracteres'),
@@ -25,15 +27,33 @@ export function SignUp() {
     resolver: yupResolver(signUpFormSchema)
   })
 
+  const toast = useToast()
   const navigation = useNavigation<AuthNavigatorRoutesProps>()
 
   function handleNavigateSignIn() {
     navigation.navigate('signIn')
   }
 
-  console.log(errors.phone)
-  function handleSignUp(data: SignUpFormData) {
-    console.log(data)
+  async function handleSignUp(data: SignUpFormData) {
+    try {
+      const response = await api.post('/users', {
+        name: data.name,
+        avatar: '',
+        email: data.email,
+        tel: data.phone,
+        password: data.password
+      })
+      console.log(response.data)
+    } catch (error) {
+      const isAppError = error instanceof AppError  
+      const title = isAppError ? error.message : 'Não foi possível criar a conta. Tente novamente mais tarde'
+      
+      toast.show({
+        title,
+        placement: 'top',
+        bgColor: 'red.500'
+      })
+    }
   }
 
   return (
