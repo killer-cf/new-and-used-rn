@@ -83,8 +83,8 @@ export function SignUp() {
             <Input
               placeholder="Nome"
               value={value}
-              onChangeText={onChange}  
-              mb={4}
+              onChangeText={onChange}
+              errorMessage={errors.name?.message}
             />
           )}
         />
@@ -97,7 +97,7 @@ export function SignUp() {
               placeholder="E-mail"
               value={value}
               onChangeText={onChange}
-              mb={4}
+              errorMessage={errors.email?.message}
             />
           )}
         />
@@ -111,7 +111,7 @@ export function SignUp() {
               keyboardType="numeric"
               value={value}
               onChangeText={onChange}  
-              mb={4}
+              errorMessage={errors.phone?.message}
             />
           )}
         />
@@ -125,7 +125,7 @@ export function SignUp() {
               secure
               value={value}
               onChangeText={onChange}  
-              mb={4}
+              errorMessage={errors.password?.message}
             />
           )}
         />
@@ -139,7 +139,7 @@ export function SignUp() {
               secure
               value={value}
               onChangeText={onChange}  
-              mb={4}
+              errorMessage={errors.password_confirm?.message}
             />
           )}
         />
