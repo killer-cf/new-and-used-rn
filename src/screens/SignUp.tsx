@@ -1,8 +1,13 @@
+import { useState } from "react";
+import { TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Center, Heading, Image, Text, VStack, useToast } from "native-base";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
+import * as ImagePicker from "expo-image-picker"
+import * as FileSystem from 'expo-file-system';
+import { FileInfo } from "expo-file-system"
 
 import LogoImg from '@assets/logo.png'
 import { UserAvatar } from "@components/UserAvatar";
@@ -27,6 +32,8 @@ export function SignUp() {
     resolver: yupResolver(signUpFormSchema)
   })
 
+  const [photoUri, setPhotoUri] = useState('')
+
   const toast = useToast()
   const navigation = useNavigation<AuthNavigatorRoutesProps>()
 
@@ -35,16 +42,31 @@ export function SignUp() {
   }
 
   async function handleSignUp(data: SignUpFormData) {
+    const fileExtension = photoUri.split('.').pop()
+
+    const photoFile = {
+      name: `${data.name.replace(' ', '_')}.${fileExtension}`.toLowerCase(),
+      uri: photoUri,
+      type: `image/${fileExtension}`
+    } as any
+
+    const signUpForm = new FormData()
+    signUpForm.append('avatar', photoFile)
+    signUpForm.append('name', data.name)
+    signUpForm.append('email', data.email)
+    signUpForm.append('tel', data.phone)
+    signUpForm.append('password', data.password)
+
     try {
-      const response = await api.post('/users', {
-        name: data.name,
-        avatar: '',
-        email: data.email,
-        tel: data.phone,
-        password: data.password
+      const response = await api.post('/users', signUpForm,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       })
       console.log(response.data)
     } catch (error) {
+      console.log(error.response.data)
       const isAppError = error instanceof AppError  
       const title = isAppError ? error.message : 'Não foi possível criar a conta. Tente novamente mais tarde'
       
@@ -56,6 +78,39 @@ export function SignUp() {
     }
   }
 
+  async function handleSelectPhoto() {
+    const photo = await ImagePicker.launchImageLibraryAsync({
+      quality: 1,
+      allowsEditing: true,
+      aspect: [4, 4],
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    })
+
+    if (photo.canceled) return
+
+    const photoUri = photo.assets[0].uri 
+
+    if (photoUri) {
+      const photoInfo = await FileSystem.getInfoAsync(photoUri) as FileInfo
+
+      if (photoInfo.size / 1024 / 1024 > 10) {
+        return toast.show({
+          title: 'Imagem muito grande, selecione uma até 10MB',
+          placement: 'top',
+          bgColor: 'red.500'
+        })
+      }
+
+      setPhotoUri(photoUri)
+
+      toast.show({
+        title: 'Foto selecionada',
+        placement: 'top',
+        bgColor: 'green.500'
+      })
+    }
+  }
+ 
   return (
     <VStack pt={20} px={12} flex={1} bgColor={"gray.200"}>
       <Center>
@@ -74,7 +129,13 @@ export function SignUp() {
       </Center>
 
       <Center mt={10}>
-        <UserAvatar siz={"2xl"} source={{ uri: 'https://github.com/killer-cf.png'}} mb={4}/>
+        <TouchableOpacity onPress={handleSelectPhoto}>
+          <UserAvatar 
+            siz={"2xl"} 
+            source={{ uri: photoUri }} 
+            mb={4}
+          />
+        </TouchableOpacity>
 
         <Controller 
           name="name"
@@ -98,6 +159,7 @@ export function SignUp() {
               value={value}
               onChangeText={onChange}
               errorMessage={errors.email?.message}
+              autoCapitalize="none"
             />
           )}
         />
