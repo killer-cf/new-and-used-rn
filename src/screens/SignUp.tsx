@@ -16,6 +16,7 @@ import { Button } from "@components/Button";
 import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 import { api } from "@services/api";
 import { AppError } from "@utils/AppError";
+import { useAuth } from "@hooks/useAuth";
 
 const signUpFormSchema = yup.object({
   name: yup.string().required('Nome deve ser informado').min(3, 'Nome dever conter pelo menos 3 caracteres'),
@@ -36,19 +37,20 @@ export function SignUp() {
 
   const toast = useToast()
   const navigation = useNavigation<AuthNavigatorRoutesProps>()
+  const { signIn, user } = useAuth()
 
   function handleNavigateSignIn() {
     navigation.navigate('signIn')
   }
 
-  async function handleSignUp(data: SignUpFormData) {
+  async function handleSignUp({name, email, phone, password}: SignUpFormData) {
     const signUpForm = new FormData()
 
     if (!!photoUri) {
       const fileExtension = photoUri.split('.').pop()
 
       const photoFile = {
-        name: `${data.name.replace(' ', '_')}.${fileExtension}`.toLowerCase(),
+        name: `${name.replace(' ', '_')}.${fileExtension}`.toLowerCase(),
         uri: photoUri,
         type: `image/${fileExtension}`
       } as any
@@ -56,19 +58,20 @@ export function SignUp() {
       signUpForm.append('avatar', photoFile)
     }
 
-    signUpForm.append('name', data.name)
-    signUpForm.append('email', data.email)
-    signUpForm.append('tel', data.phone)
-    signUpForm.append('password', data.password)
+    signUpForm.append('name', name)
+    signUpForm.append('email', email)
+    signUpForm.append('tel', phone)
+    signUpForm.append('password', password)
 
     try {
-      const response = await api.post('/users', signUpForm,
+      await api.post('/users', signUpForm,
       {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       })
-      console.log(response.data)
+      
+      signIn(email, password)
     } catch (error) {
       console.log(error.response.data)
       const isAppError = error instanceof AppError  
