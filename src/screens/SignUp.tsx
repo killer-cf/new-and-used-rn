@@ -42,16 +42,20 @@ export function SignUp() {
   }
 
   async function handleSignUp(data: SignUpFormData) {
-    const fileExtension = photoUri.split('.').pop()
-
-    const photoFile = {
-      name: `${data.name.replace(' ', '_')}.${fileExtension}`.toLowerCase(),
-      uri: photoUri,
-      type: `image/${fileExtension}`
-    } as any
-
     const signUpForm = new FormData()
-    signUpForm.append('avatar', photoFile)
+
+    if (!!photoUri) {
+      const fileExtension = photoUri.split('.').pop()
+
+      const photoFile = {
+        name: `${data.name.replace(' ', '_')}.${fileExtension}`.toLowerCase(),
+        uri: photoUri,
+        type: `image/${fileExtension}`
+      } as any
+      
+      signUpForm.append('avatar', photoFile)
+    }
+
     signUpForm.append('name', data.name)
     signUpForm.append('email', data.email)
     signUpForm.append('tel', data.phone)
