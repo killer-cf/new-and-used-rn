@@ -1,3 +1,4 @@
+import { api } from "@services/api";
 import { ReactNode, createContext, useState } from "react";
 
 type User = {
@@ -20,10 +21,14 @@ export function AuthContextProvider({children}: AuthContextProviderProps) {
   const [user, setUser] = useState<User>({} as User)
 
   async function signIn(email: string, password: string) {
-    setUser({
-      name: 'kilder',
-      avatar: 'oioi',
-    })
+    try {
+      const response = await api.post('/sessions', { email, password })
+      const { name, avatar } = response.data.user
+      
+      setUser({ name, avatar })
+    } catch (error) {
+      throw error
+    }
   }
 
   return (
