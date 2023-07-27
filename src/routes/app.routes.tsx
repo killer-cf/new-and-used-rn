@@ -8,6 +8,7 @@ import { Home } from '@screens/Home';
 import { MyAds } from '@screens/MyAds';
 import { PreAd } from '@screens/PreAd';
 import { AdForm } from '@screens/AdForm';
+import { useAuth } from '@hooks/useAuth';
 
 type AppRoutes = {
   home: undefined
@@ -27,6 +28,7 @@ const { Navigator, Screen } = createBottomTabNavigator<AppRoutes>()
 
 export function AppRoutes(){
   const { colors, sizes } = useTheme()
+  const { signOut } = useAuth()
 
   return (
     <Navigator screenOptions={{ 
@@ -71,9 +73,7 @@ export function AppRoutes(){
           )
         }}
         listeners={() => ({
-          tabPress: (e) => {
-              console.log(`sair`)
-          },
+          tabPress: (e) => signOut(),
       })} 
       />
 
