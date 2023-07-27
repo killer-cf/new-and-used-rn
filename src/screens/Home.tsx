@@ -7,11 +7,14 @@ import { UserAvatar } from "@components/UserAvatar";
 import { Input } from "@components/Input";
 import { AdCard } from "@components/AdCard";
 import { ModalContext } from "@contexts/FilterModalProvider";
+import { useAuth } from "@hooks/useAuth";
+import { api } from "@services/api";
 
 export function Home() {
   const { colors } = useTheme()
   const ads = [1,2,3,4,5,6,7,8,9]
   const { openModal } = useContext(ModalContext)
+  const { user } = useAuth()
 
   const adsPairs: any = []
   for (let i = 0; i < ads.length; i += 2) {
@@ -26,10 +29,10 @@ export function Home() {
       <VStack bg={"gray.200"} safeAreaTop flex={1} px={6} pt={5} >
         <ScrollView showsVerticalScrollIndicator={false}>
           <HStack>
-            <UserAvatar siz="md" source={{ uri: 'https://github.com/killer-cf.png'}} mr={3} />
+            <UserAvatar siz="md" source={{ uri: `${api.defaults.baseURL}/images/${user.avatar}`}} mr={3} />
             <VStack flex={1}>
               <Text fontFamily={'body'} color={"gray.700"} fontSize={"md"}>Boas vindas,</Text>
-              <Heading fontFamily={"heading"} color={"gray.700"} fontSize={"md"}>Kilder!</Heading>
+              <Heading fontFamily={"heading"} color={"gray.700"} fontSize={"md"}>{user.name}!</Heading>
             </VStack>
             <Button
               ml={3} 

@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import { Center, Heading, Image, Text, VStack } from "native-base";
+import { Center, Heading, Image, Text, VStack, useToast } from "native-base";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
@@ -9,6 +9,7 @@ import { Input } from "@components/Input"
 import { Button } from "@components/Button"
 import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 import { useAuth } from "@hooks/useAuth";
+import { AppError } from "@utils/AppError";
 
 const signInFormSchema = yup.object({
   email: yup.string().required('Informe o e-mail').email('Formato de e-mail invalido'),
@@ -24,6 +25,8 @@ export function SignIn() {
     resolver: yupResolver(signInFormSchema)
   })
 
+  const toast = useToast()
+
   const { signIn } = useAuth()
 
   function handleNavigateSignUp() {
@@ -31,7 +34,19 @@ export function SignIn() {
   }
 
   async function handleSignIn({ email, password }: SignInFormData) {
-    await signIn(email, password)
+    try {
+      await signIn(email, password)
+      
+    } catch (error) {
+      const isAppError = error instanceof AppError
+      const title = isAppError ? error.message : "Não foi possível efetuar o login, tente novamente mais tarde"
+
+      toast.show({
+        title,
+        placement: 'top',
+        bgColor: 'red.500'
+      })
+    }
   }
 
   return (
