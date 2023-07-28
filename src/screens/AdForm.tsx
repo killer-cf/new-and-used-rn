@@ -30,7 +30,7 @@ const adFormSchema = yup.object({
 type AdFormData = yup.InferType<typeof adFormSchema>
 
 export function AdForm() {
-  const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<AdFormData>({
+  const { control, watch, handleSubmit, formState: { errors, isSubmitting } } = useForm<AdFormData>({
     resolver: yupResolver(adFormSchema)
   })
 
@@ -41,7 +41,47 @@ export function AdForm() {
 
   const params  = route.params as AdFormParams
 
-  console.log(errors)
+  const formatCurrency = (value: string) => {
+
+    //  => 
+    //0,00 => value.split('') => [0 , 0 0]
+    //1 => 
+    if (value.length === 1) {
+      let newArray = ['0', ',', '0', value]
+      // newArray[value.length - 2] = ','
+      // newArray.push(value)
+      return newArray.join('') // => '0,01'
+    }
+
+    // '0,012'
+    if (value.length === 5) {
+      console.log('entrei no 2')
+      let [int, dec] = value.replace('.', ',').split(',')
+      if (Number(int) === 0) {
+        dec = String(parseInt(dec))
+      }
+      if (dec.length === 3) {
+        var i = int.split('')
+        i.push(String(dec[0]))
+        int = String(parseInt(i.join('')))
+        dec = dec.substring(1)
+      }
+      return int + ',' + dec
+    }
+    if (value.length >= 6) {
+      let [int, dec] = value.split(',')
+      console.log('entrei no 3 com ', value)
+      var i = int.split('')
+      i.push(String(dec[0]))
+      int = String(parseInt(i.join('')))
+      console.log(int)
+      int = Number(int).toLocaleString('pt-BR')
+      dec = dec.substring(1)
+
+      return int + ',' + dec
+    }
+    //
+  }
   function handleGoPreview(data: AdFormData) {
     // navigation.navigate('pre_ad')
     console.log(data)
@@ -175,10 +215,11 @@ export function AdForm() {
         <Controller 
           name='price'
           control={control}
+          defaultValue=""
           render={({ field: { value, onChange }}) => (
             <Input 
               placeholder="Valor do produto"
-              value={value}
+              value={formatCurrency(value)}
               onChangeText={onChange}
               mt={3}
               leftElement={
