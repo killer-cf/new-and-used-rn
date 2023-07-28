@@ -1,5 +1,8 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Box, Checkbox, HStack, Heading, Icon, Image, Pressable, Radio, ScrollView, Switch, Text, TextArea, VStack, useTheme } from "native-base";
+import * as yup from "yup"
+import { yupResolver } from "@hookform/resolvers/yup"
+import { Controller, useForm } from "react-hook-form";
 
 import { Header } from "@components/Header";
 import { Plus, X } from "phosphor-react-native";
@@ -15,8 +18,22 @@ type AdFormParams = {
   name: string
 }
 
+const adFormSchema = yup.object({
+  name: yup.string().required(),
+  description: yup.string().required(),
+  state: yup.string().oneOf(['new_product', 'used_product']).required(),
+  price: yup.string().required(),
+  accept_trade: yup.boolean().required(),
+  payment_methods: yup.array(yup.string().required()).required()
+})
+
+type AdFormData = yup.InferType<typeof adFormSchema>
+
 export function AdForm() {
-  const [radioSelected, setRadioSelected] = useState('')
+  const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<AdFormData>({
+    resolver: yupResolver(adFormSchema)
+  })
+
   const route = useRoute()
   const { colors } = useTheme()
   
@@ -24,8 +41,10 @@ export function AdForm() {
 
   const params  = route.params as AdFormParams
 
-  function handleGoPreview() {
-    navigation.navigate('pre_ad')
+  console.log(errors)
+  function handleGoPreview(data: AdFormData) {
+    // navigation.navigate('pre_ad')
+    console.log(data)
   }
 
   return (
@@ -72,112 +91,154 @@ export function AdForm() {
         <Heading fontFamily={"heading"} fontSize={'md'} color={"gray.600"} mt={6} mb={1}>
           Sobre o produto
         </Heading>
-        <Input 
-          placeholder="Título do anúncio"
-          mt={3}
-          mb={3}
-        />
-        <TextArea
-          autoCompleteType={{}}
-          alignItems={'baseline'}
-          bgColor={"gray.100"}
-          placeholderTextColor={"gray.400"}
-          placeholder="Descrição do produto"
-          color={"gray.600"}
-          fontSize={"md"}
-          rounded={"lg"}
-          h={32}
-          px={2}
-          py={3}
-          borderWidth={0}
-          _focus={{
-            borderWidth: 1,
-            borderColor: "gray.600",
-          }}
-          _invalid={{
-            borderWidth: 1,
-            borderColor: "red.500"
-          }}
+        <Controller 
+          name='name'
+          control={control}
+          render={({ field: { value, onChange }}) => (
+            <Input 
+              placeholder="Título do anúncio"
+              value={value}
+              onChangeText={onChange}
+              mt={3}
+            />
+          )}
         />
 
-        <Radio.Group
-          name="myRadioGroup" 
-          accessibilityLabel="favorite number" 
-          value={radioSelected} 
-          onChange={setRadioSelected}
-        >
-          <HStack mt={3}>
-            <Box pr={5}>
-              <Radio 
-                value="new_product"
-                _pressed={{ borderColor: 'blue.500'}} 
-                _checked={{ borderColor: 'lightBlue.500', _icon: { color: 'lightBlue.500'}, _pressed: { borderColor: 'blue.500'}}}
-              >
-                Produto novo
-              </Radio>
-            </Box>
-            <Box>
-              <Radio 
-                value="used_product"
-                _pressed={{ borderColor: 'blue.500'}} 
-                _checked={{ borderColor: 'lightBlue.500', _icon: { color: 'lightBlue.500'}, _pressed: { borderColor: 'blue.500'}}}
-              >
-                Produto usado
-              </Radio>
-            </Box>
-          </HStack>
-        </Radio.Group>
+        <Controller 
+          name='description'
+          control={control}
+          render={({ field: { value, onChange }}) => (
+            <TextArea
+              placeholder="Descrição do produto"
+              value={value}
+              onChangeText={onChange}
+              autoCompleteType={{}}
+              alignItems={'baseline'}
+              bgColor={"gray.100"}
+              placeholderTextColor={"gray.400"}
+              color={"gray.600"}
+              fontSize={"md"}
+              rounded={"lg"}
+              h={32}
+              px={2}
+              py={3}
+              borderWidth={0}
+              _focus={{
+                borderWidth: 1,
+                borderColor: "gray.600",
+              }}
+              _invalid={{
+                borderWidth: 1,
+                borderColor: "red.500"
+              }}
+            />
+          )}
+        />
+
+        <Controller 
+          name='state'
+          control={control}
+          render={({ field: { value, onChange }}) => (
+            <Radio.Group
+              name="myRadioGroup" 
+              accessibilityLabel="favorite number" 
+              value={value} 
+              onChange={onChange}
+            >
+              <HStack mt={3}>
+                <Box pr={5}>
+                  <Radio 
+                    value="new_product"
+                    _pressed={{ borderColor: 'blue.500'}} 
+                    _checked={{ borderColor: 'lightBlue.500', _icon: { color: 'lightBlue.500'}, _pressed: { borderColor: 'blue.500'}}}
+                  >
+                    Produto novo
+                  </Radio>
+                </Box>
+                <Box>
+                  <Radio 
+                    value="used_product"
+                    _pressed={{ borderColor: 'blue.500'}} 
+                    _checked={{ borderColor: 'lightBlue.500', _icon: { color: 'lightBlue.500'}, _pressed: { borderColor: 'blue.500'}}}
+                  >
+                    Produto usado
+                  </Radio>
+                </Box>
+              </HStack>
+            </Radio.Group>
+          )}
+        />
 
         <Heading fontFamily={"heading"} fontSize={'md'} color={"gray.600"} mt={6} mb={1}>
           Venda
         </Heading>
-        <Input 
-          placeholder="Valor do produto"
-          mt={3}
-          mb={3}
-          leftElement={
-            <Text fontSize={'md'} color={"gray.700"} ml={3}>R$</Text>
-          }
+        <Controller 
+          name='price'
+          control={control}
+          render={({ field: { value, onChange }}) => (
+            <Input 
+              placeholder="Valor do produto"
+              value={value}
+              onChangeText={onChange}
+              mt={3}
+              leftElement={
+                <Text fontSize={'md'} color={"gray.700"} ml={3}>R$</Text>
+              }
+            />
+          )}
         />
 
         <Heading fontFamily={"heading"} fontSize={'sm'} mt={6} mb={3} color={"gray.600"} >
           Aceita troca?
         </Heading>
-        <Switch onTrackColor={"lightBlue.500"} />
+        <Controller 
+          name='accept_trade'
+          control={control}
+          render={({ field: { value, onChange }}) => (
+            <Switch onTrackColor={"lightBlue.500"} value={value} onValueChange={onChange}/>
+          )}
+        />
 
         <Heading fontFamily={"heading"} fontSize={'sm'} mt={6} mb={3} color={"gray.600"} >
           Meios de pagamento aceitos
         </Heading>
-        <Checkbox.Group flex={1} accessibilityLabel="selecione os meios de pagamento aceitos">
-          <HStack alignItems={"center"} mb={2}>
-            <Checkbox  value="ticket" accessibilityLabel="Boleto?" _checked={{backgroundColor: 'lightBlue.500', borderColor: 'lightBlue.500'}}/>
-            <Text ml={2} fontFamily={"body"} fontSize={"md"}>Boleto</Text>
-          </HStack>
-          
-          <HStack alignItems={"center"} mb={2}>
-            <Checkbox  value="pix" accessibilityLabel="Pix?" _checked={{backgroundColor: 'lightBlue.500', borderColor: 'lightBlue.500'}}/>
-            <Text ml={2} fontFamily={"body"} fontSize={"md"}>Pix</Text>
-          </HStack>
 
-          <HStack alignItems={"center"} mb={2}>
-            <Checkbox  value="cash" accessibilityLabel="Dinheiro?" _checked={{backgroundColor: 'lightBlue.500', borderColor: 'lightBlue.500'}}/>
-            <Text ml={2} fontFamily={"body"} fontSize={"md"}>Dinheiro</Text>
-          </HStack>
+        <Controller 
+          name='payment_methods'
+          control={control}
+          render={({ field: { value, onChange }}) => (
+            <Checkbox.Group value={value} onChange={onChange} flex={1} accessibilityLabel="selecione os meios de pagamento aceitos">
+              <HStack alignItems={"center"} mb={2}>
+                <Checkbox  value="ticket" accessibilityLabel="Boleto?" _checked={{backgroundColor: 'lightBlue.500', borderColor: 'lightBlue.500'}}/>
+                <Text ml={2} fontFamily={"body"} fontSize={"md"}>Boleto</Text>
+              </HStack>
+              
+              <HStack alignItems={"center"} mb={2}>
+                <Checkbox  value="pix" accessibilityLabel="Pix?" _checked={{backgroundColor: 'lightBlue.500', borderColor: 'lightBlue.500'}}/>
+                <Text ml={2} fontFamily={"body"} fontSize={"md"}>Pix</Text>
+              </HStack>
 
-          <HStack alignItems={"center"} mb={2}>
-            <Checkbox  value="credit_card" accessibilityLabel="cartão de crédito?" _checked={{backgroundColor: 'lightBlue.500', borderColor: 'lightBlue.500'}}/>
-            <Text ml={2} fontFamily={"body"} fontSize={"md"}>Cartão de crédito</Text>
-          </HStack>
+              <HStack alignItems={"center"} mb={2}>
+                <Checkbox  value="cash" accessibilityLabel="Dinheiro?" _checked={{backgroundColor: 'lightBlue.500', borderColor: 'lightBlue.500'}}/>
+                <Text ml={2} fontFamily={"body"} fontSize={"md"}>Dinheiro</Text>
+              </HStack>
 
-          <HStack alignItems={"center"} mb={2}>
-            <Checkbox  value="deposit" accessibilityLabel="Deposito bancário?" _checked={{backgroundColor: 'lightBlue.500', borderColor: 'lightBlue.500'}}/>
-            <Text ml={2} fontFamily={"body"} fontSize={"md"}>Deposito bancário</Text>
-          </HStack>
-        </Checkbox.Group>
+              <HStack alignItems={"center"} mb={2}>
+                <Checkbox  value="credit_card" accessibilityLabel="cartão de crédito?" _checked={{backgroundColor: 'lightBlue.500', borderColor: 'lightBlue.500'}}/>
+                <Text ml={2} fontFamily={"body"} fontSize={"md"}>Cartão de crédito</Text>
+              </HStack>
+
+              <HStack alignItems={"center"} mb={2}>
+                <Checkbox  value="deposit" accessibilityLabel="Deposito bancário?" _checked={{backgroundColor: 'lightBlue.500', borderColor: 'lightBlue.500'}}/>
+                <Text ml={2} fontFamily={"body"} fontSize={"md"}>Deposito bancário</Text>
+              </HStack>
+            </Checkbox.Group>
+          )}
+        />
 
         <HStack mt={12}>
           <Button text="Cancelar" buttonColor="white-gray" flex={1} mr={3}/>
-          <Button text="Avançar" buttonColor="gray" flex={1} onPress={handleGoPreview}/>
+          <Button text="Avançar" isLoading={isSubmitting} buttonColor="gray" flex={1} onPress={handleSubmit(handleGoPreview)}/>
         </HStack>
       </ScrollView>
     </VStack>
