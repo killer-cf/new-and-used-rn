@@ -73,7 +73,6 @@ export function SignUp() {
       
       signIn(email, password)
     } catch (error) {
-      console.log(error.response.data)
       const isAppError = error instanceof AppError  
       const title = isAppError ? error.message : 'Não foi possível criar a conta. Tente novamente mais tarde'
       

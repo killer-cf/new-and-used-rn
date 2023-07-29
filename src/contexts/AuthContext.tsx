@@ -1,5 +1,6 @@
 import { UserDTO } from "@dtos/UserDTO";
 import { api } from "@services/api";
+import { storageAuthTokenRemove } from "@storage/storageAuthToken";
 import { storageUserGet, storageUserRemove, storageUserSave } from "@storage/storageUser";
 import { ReactNode, createContext, useEffect, useState } from "react";
 
@@ -49,6 +50,14 @@ export function AuthContextProvider({children}: AuthContextProviderProps) {
   useEffect(() => {
     loadUserData()
   }, [])
+
+  useEffect(() => {
+    const subscribe = api.registerInterceptTokenManager(signOut)
+
+    return () => {
+      subscribe()
+    }
+  }, [signOut])
 
   return (
     <AuthContext.Provider value={{ user, signIn, signOut }}>
