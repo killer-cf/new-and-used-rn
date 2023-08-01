@@ -37,7 +37,7 @@ export function SignUp() {
 
   const toast = useToast()
   const navigation = useNavigation<AuthNavigatorRoutesProps>()
-  const { signIn, user } = useAuth()
+  const { signIn } = useAuth()
 
   function handleNavigateSignIn() {
     navigation.navigate('signIn')

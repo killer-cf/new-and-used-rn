@@ -1,8 +1,12 @@
+import { useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { Box, Checkbox, FormControl, HStack, Heading, Icon, Image, Pressable, Radio, ScrollView, Switch, Text, TextArea, VStack, useTheme } from "native-base";
+import { Box, Checkbox, FormControl, HStack, Heading, Icon, Image, Pressable, Radio, ScrollView, Switch, Text, TextArea, VStack, useTheme, useToast } from "native-base";
 import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { Controller, useForm } from "react-hook-form";
+import * as ImagePicker from "expo-image-picker"
+import * as FileSystem from 'expo-file-system';
+import { FileInfo } from "expo-file-system"
 
 import { Header } from "@components/Header";
 import { Plus, X } from "phosphor-react-native";
@@ -33,9 +37,11 @@ export function AdForm() {
   const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<AdFormData>({
     resolver: yupResolver(adFormSchema)
   })
+  const [photos, setPhotos] = useState<ImagePicker.ImagePickerAsset[]>()
 
   const route = useRoute()
   const { colors } = useTheme()
+  const toast = useToast()
   
   const navigation = useNavigation<AppNavigatorRoutesProps>()
 
@@ -44,6 +50,38 @@ export function AdForm() {
   function handleGoPreview(data: AdFormData) {
     // navigation.navigate('pre_ad')
     console.log(data)
+  }
+
+  async function handleSelectPhotos() {
+    const photos = await ImagePicker.launchImageLibraryAsync({
+      quality: 1,
+      aspect: [5, 4],
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsMultipleSelection: true,
+    })
+
+    if (photos.canceled) return
+    console.log(photos.assets)
+    setPhotos(photos.assets)
+
+    if (photos) {
+      // const photoInfo = await FileSystem.getInfoAsync(photoUri) as FileInfo
+
+      // if (photoInfo.size / 1024 / 1024 > 10) {
+      //   return toast.show({
+      //     title: 'Imagem muito grande, selecione uma até 10MB',
+      //     placement: 'top',
+      //     bgColor: 'red.500'
+      //   })
+      // }
+
+
+      toast.show({
+        title: 'Foto selecionada',
+        placement: 'top',
+        bgColor: 'green.500'
+      })
+    }
   }
 
   return (
@@ -58,33 +96,38 @@ export function AdForm() {
           Escolha até 3 imagens para mostrar o quando o seu produto é incrível!
         </Text>
         <HStack mt={3}>
-          <Box w={25} h={25} rounded={"lg"} overflow={"hidden"} mr={2}>
-            <Image 
-              source={ProductImage}
-              alt="imagem selecionada"
-              w={"full"}
-              h={"full"}
-              resizeMode="cover"
-            />
-            <Pressable 
-              position={"absolute"} 
-              right={1} 
-              top={1} 
-              w={4} 
-              h={4} 
-              rounded={"full"} 
-              bg={"gray.700"} 
-              justifyContent={"center"} 
-              alignItems={"center"} 
-            >
+          {photos?.map(photo => (
+            <Box w={25} h={25} rounded={"lg"} overflow={"hidden"} mr={2}>
+              <Image 
+                source={{ uri: photo.uri }}
+                alt="imagem selecionada"
+                w={"full"}
+                h={"full"}
+                resizeMode="cover"
+              />
+              <Pressable 
+                position={"absolute"} 
+                right={1} 
+                top={1} 
+                w={4} 
+                h={4} 
+                rounded={"full"} 
+                bg={"gray.700"} 
+                justifyContent={"center"} 
+                alignItems={"center"} 
+              >
               <Icon as={<X color={colors.gray[100]} size={10} weight="bold"/>}  />
             </Pressable>
           </Box>
-          <TouchableOpacity>
-            <Box w={25} h={25} justifyContent={"center"} alignItems={"center"} rounded={"lg"} bg={"gray.300"} >
-              <Icon as={<Plus color={colors.gray[400]}/>}  />
-            </Box>
-          </TouchableOpacity>   
+          ))}
+          { photos?.length <= 3 && 
+            <TouchableOpacity onPress={handleSelectPhotos}>
+              <Box w={25} h={25} justifyContent={"center"} alignItems={"center"} rounded={"lg"} bg={"gray.300"} >
+                <Icon as={<Plus color={colors.gray[400]}/>}  />
+              </Box>
+            </TouchableOpacity> 
+          }
+            
         </HStack>
 
         <Heading fontFamily={"heading"} fontSize={'md'} color={"gray.600"} mt={6} mb={1}>
