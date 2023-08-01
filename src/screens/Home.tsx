@@ -86,7 +86,7 @@ export function Home() {
           <VStack mt={6}>
             {adsPairs.map((ad: any) => (
               <HStack key={ad}>
-                <AdCard key={ad[0]} mr={4} />
+                <AdCard mr={4} />
                 {ad[1] ? <AdCard key={ad[1]} /> : <Box flex={1} />}
               </HStack>
             ))}

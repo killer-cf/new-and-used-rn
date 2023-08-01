@@ -37,7 +37,7 @@ export function AdForm() {
   const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<AdFormData>({
     resolver: yupResolver(adFormSchema)
   })
-  const [photos, setPhotos] = useState<ImagePicker.ImagePickerAsset[]>()
+  const [photos, setPhotos] = useState<ImagePicker.ImagePickerAsset[]>([])
 
   const route = useRoute()
   const { colors } = useTheme()
@@ -53,35 +53,37 @@ export function AdForm() {
   }
 
   async function handleSelectPhotos() {
-    const photos = await ImagePicker.launchImageLibraryAsync({
+    const selectedPhotos = await ImagePicker.launchImageLibraryAsync({
       quality: 1,
       aspect: [5, 4],
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsMultipleSelection: true,
+      selectionLimit: 3 - photos.length,
     })
 
-    if (photos.canceled) return
-    console.log(photos.assets)
-    setPhotos(photos.assets)
+    if (selectedPhotos.canceled) return
 
-    if (photos) {
-      // const photoInfo = await FileSystem.getInfoAsync(photoUri) as FileInfo
-
-      // if (photoInfo.size / 1024 / 1024 > 10) {
-      //   return toast.show({
-      //     title: 'Imagem muito grande, selecione uma até 10MB',
-      //     placement: 'top',
-      //     bgColor: 'red.500'
-      //   })
-      // }
-
-
-      toast.show({
-        title: 'Foto selecionada',
+    if (selectedPhotos.assets.length > 3 || selectedPhotos.assets.length + photos.length > 3) {
+      return toast.show({
+        title: 'Selecione até 3 fotos',
         placement: 'top',
-        bgColor: 'green.500'
+        bgColor: 'red.500'
       })
     }
+
+    setPhotos((state) => [...state, ...selectedPhotos.assets])
+
+    toast.show({
+      title: 'Foto selecionada',
+      placement: 'top',
+      bgColor: 'green.500'
+    })
+  }
+
+  function handleRemovePhoto(index: number) {
+    const newPhotos = [...photos]
+    newPhotos.splice(index, 1)
+    setPhotos(newPhotos);
   }
 
   return (
@@ -96,8 +98,8 @@ export function AdForm() {
           Escolha até 3 imagens para mostrar o quando o seu produto é incrível!
         </Text>
         <HStack mt={3}>
-          {photos?.map(photo => (
-            <Box w={25} h={25} rounded={"lg"} overflow={"hidden"} mr={2}>
+          {photos?.map((photo, index) => (
+            <Box key={index} w={25} h={25} rounded={"lg"} overflow={"hidden"} mr={2}>
               <Image 
                 source={{ uri: photo.uri }}
                 alt="imagem selecionada"
@@ -106,6 +108,7 @@ export function AdForm() {
                 resizeMode="cover"
               />
               <Pressable 
+                onPress={() => handleRemovePhoto(index)}
                 position={"absolute"} 
                 right={1} 
                 top={1} 
@@ -120,7 +123,7 @@ export function AdForm() {
             </Pressable>
           </Box>
           ))}
-          { photos?.length <= 3 && 
+          { photos?.length < 3 && 
             <TouchableOpacity onPress={handleSelectPhotos}>
               <Box w={25} h={25} justifyContent={"center"} alignItems={"center"} rounded={"lg"} bg={"gray.300"} >
                 <Icon as={<Plus color={colors.gray[400]}/>}  />
