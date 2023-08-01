@@ -5,13 +5,10 @@ import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { Controller, useForm } from "react-hook-form";
 import * as ImagePicker from "expo-image-picker"
-import * as FileSystem from 'expo-file-system';
-import { FileInfo } from "expo-file-system"
 
 import { Header } from "@components/Header";
 import { Plus, X } from "phosphor-react-native";
 import { TouchableOpacity } from "react-native";
-import ProductImage from "@assets/product.png"
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
@@ -28,13 +25,14 @@ const adFormSchema = yup.object({
   state: yup.string().oneOf(['new_product', 'used_product']).required('Selecione o estado do produto'),
   price: yup.string().required('Informe o preço do produto'),
   accept_trade: yup.boolean().required(),
-  payment_methods: yup.array(yup.string().required()).required('Informe ao menos 1 método de pagamento')
+  payment_methods: yup.array(yup.string().required()).required('Informe ao menos 1 método de pagamento'),
+  images: yup.array().required('Adicione ao menos 1 imagem')
 })
 
-type AdFormData = yup.InferType<typeof adFormSchema>
+export type AdFormData = yup.InferType<typeof adFormSchema>
 
 export function AdForm() {
-  const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<AdFormData>({
+  const { control, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm<AdFormData>({
     resolver: yupResolver(adFormSchema)
   })
   const [photos, setPhotos] = useState<ImagePicker.ImagePickerAsset[]>([])
@@ -48,7 +46,7 @@ export function AdForm() {
   const params  = route.params as AdFormParams
 
   function handleGoPreview(data: AdFormData) {
-    // navigation.navigate('pre_ad')
+    navigation.navigate('pre_ad', data)
     console.log(data)
   }
 
@@ -72,6 +70,7 @@ export function AdForm() {
     }
 
     setPhotos((state) => [...state, ...selectedPhotos.assets])
+    setValue('images', [...photos, ...selectedPhotos.assets])
 
     toast.show({
       title: 'Foto selecionada',

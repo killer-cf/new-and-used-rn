@@ -1,14 +1,23 @@
 import { Box, HStack, Heading, Image, ScrollView, Text, VStack, useTheme } from "native-base";
-import { ArrowLeft, Bank, Barcode, CreditCard, Money,  QrCode, Tag } from "phosphor-react-native";
+import { ArrowLeft, Tag } from "phosphor-react-native";
 
 import BikeImg from "@assets/bike.png"
 import { MultiStep } from "@components/MultiStep";
 import { UserAvatar } from "@components/UserAvatar";
 import { Tag as TagF } from "@components/Tag";
 import { Button } from "@components/Button";
+import { useRoute } from "@react-navigation/native";
+import { AdFormData } from "./AdForm";
+import { PaymentMethod, PaymentMethodsType } from "@components/PaymentMethod";
 
 export function PreAd() {
   const { colors } = useTheme()
+
+  const route = useRoute()
+
+  const params = route.params as AdFormData
+
+  const { images, name, description, state, price, accept_trade, payment_methods } = params
 
   return (
     <VStack safeAreaTop flex={1} bg={"lightBlue.500"}>
@@ -26,8 +35,8 @@ export function PreAd() {
         h={'270px'}
         >
           <Image 
-            source={BikeImg}
-            alt="nome do produto"
+            source={{ uri: images[0].uri }}
+            alt={name}
             w={"full"}
             h={"full"}
             resizeMode="cover"
@@ -50,15 +59,15 @@ export function PreAd() {
           <TagF title="NOVO" alignSelf={'start'}/>
           <HStack justifyContent={"space-between"} alignItems={"center"}>
             <Heading fontFamily={"heading"} fontSize={"xl"} color={"gray.700"} my={2}>
-              Bicicleta
+              {name}
             </Heading>
             <HStack>
               <Text pt={1} fontSize={'sm'} color={"lightBlue.500"} fontFamily={"heading"}>R$ </Text>
-              <Heading fontSize={'xl'} color={"lightBlue.500"} fontFamily={"heading"}>1.200,00</Heading>
+              <Heading fontSize={'xl'} color={"lightBlue.500"} fontFamily={"heading"}>{price}</Heading>
             </HStack>
           </HStack>
           <Text color={"gray.600"} fontSize={'sm'} mb={6}>
-            Cras congue cursus in tortor sagittis placerat nunc, tellus arcu. Vitae ante leo eget maecenas urna mattis cursus. Mauris metus amet nibh mauris mauris accumsan, euismod. Aenean leo nunc, purus iaculis in aliquam.
+            {description}
           </Text>
 
           <HStack alignItems={"center"}>
@@ -66,43 +75,16 @@ export function PreAd() {
               Aceita troca?
             </Heading>
             <Text color={"gray.600"} fontSize={'sm'} ml={2}>
-              Sim
+              {accept_trade ? 'Sim': 'Não'}
             </Text>
           </HStack>
 
           <Heading fontFamily={"heading"} fontSize={'sm'} color={"gray.600"} mt={3} mb={2}>
             Meios de pagamento:
           </Heading>
-          <HStack  mb={1}>
-            <Barcode />
-            <Text color={"gray.600"} fontSize={'sm'} ml={2}>
-              Boleto
-            </Text>
-          </HStack>
-          <HStack  mb={1}>
-            <QrCode />
-            <Text color={"gray.600"} fontSize={'sm'} ml={2}>
-              Pix
-            </Text>
-          </HStack>
-          <HStack  mb={1}>
-            <Money />
-            <Text color={"gray.600"} fontSize={'sm'} ml={2}>
-              Dinheiro
-            </Text>
-          </HStack>
-          <HStack  mb={1}>
-            <CreditCard />
-            <Text color={"gray.600"} fontSize={'sm'} ml={2}>
-              Cartão de Crédito
-            </Text>
-          </HStack>
-          <HStack  mb={1}>
-            <Bank />
-            <Text color={"gray.600"} fontSize={'sm'} ml={2}>
-              Depósito Bancário
-            </Text>
-          </HStack>
+          {payment_methods.map(payment_method => (
+            <PaymentMethod title={payment_method as PaymentMethodsType} />
+          ))}
         </VStack>
       </ScrollView>
       <HStack bg={"gray.200"} px={6} pt={5} position={'fixed'} bottom={1} safeAreaBottom>

@@ -7,7 +7,7 @@ import { Ad } from '@screens/Ad';
 import { Home } from '@screens/Home';
 import { MyAds } from '@screens/MyAds';
 import { PreAd } from '@screens/PreAd';
-import { AdForm } from '@screens/AdForm';
+import { AdForm, AdFormData } from '@screens/AdForm';
 import { useAuth } from '@hooks/useAuth';
 
 type AppRoutes = {
@@ -19,7 +19,7 @@ type AppRoutes = {
     id: string
     name: string
   }
-  pre_ad: undefined
+  pre_ad: AdFormData
 }
 
 export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>
