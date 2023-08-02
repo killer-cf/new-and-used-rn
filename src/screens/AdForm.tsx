@@ -270,7 +270,7 @@ export function AdForm() {
             <>
               <Checkbox.Group value={value} onChange={onChange} flex={1} accessibilityLabel="selecione os meios de pagamento aceitos">
                 <HStack alignItems={"center"} mb={2}>
-                  <Checkbox  value="ticket" accessibilityLabel="Boleto?" _checked={{backgroundColor: 'lightBlue.500', borderColor: 'lightBlue.500'}}/>
+                  <Checkbox  value="boleto" accessibilityLabel="Boleto?" _checked={{backgroundColor: 'lightBlue.500', borderColor: 'lightBlue.500'}}/>
                   <Text ml={2} fontFamily={"body"} fontSize={"md"}>Boleto</Text>
                 </HStack>
                 
@@ -285,7 +285,7 @@ export function AdForm() {
                 </HStack>
 
                 <HStack alignItems={"center"} mb={2}>
-                  <Checkbox  value="credit_card" accessibilityLabel="cartão de crédito?" _checked={{backgroundColor: 'lightBlue.500', borderColor: 'lightBlue.500'}}/>
+                  <Checkbox  value="card" accessibilityLabel="cartão de crédito?" _checked={{backgroundColor: 'lightBlue.500', borderColor: 'lightBlue.500'}}/>
                   <Text ml={2} fontFamily={"body"} fontSize={"md"}>Cartão de crédito</Text>
                 </HStack>
 

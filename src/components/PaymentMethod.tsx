@@ -2,7 +2,7 @@ import { HStack, Text } from "native-base";
 import { IHStackProps } from "native-base/lib/typescript/components/primitives/Stack/HStack";
 import { Bank, Barcode, CreditCard, Money, QrCode } from "phosphor-react-native";
 
-export type PaymentMethodsType = 'pix' | 'cash' | 'ticket' | 'credit_card' | 'deposit'
+export type PaymentMethodsType = 'pix' | 'cash' | 'boleto' | 'card' | 'deposit'
 
 type Props = IHStackProps & {
   title: PaymentMethodsType
@@ -11,16 +11,16 @@ type Props = IHStackProps & {
 const paymentMethodIcons: Record<PaymentMethodsType, JSX.Element> = {
   pix: <QrCode />,
   cash: <Money />,
-  ticket: <Barcode />,
-  credit_card: <CreditCard />,
+  boleto: <Barcode />,
+  card: <CreditCard />,
   deposit: <Bank />,
 }
 
 const paymentMethodTexts: Record<PaymentMethodsType, string> = {
   pix: 'Pix',
   cash: 'Dinheiro',
-  ticket: 'Boleto',
-  credit_card: 'Cartão de Crédito',
+  boleto: 'Boleto',
+  card: 'Cartão de Crédito',
   deposit: 'Depósito',
 }
 

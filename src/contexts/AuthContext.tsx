@@ -23,6 +23,7 @@ export function AuthContextProvider({children}: AuthContextProviderProps) {
   async function signOut() {
     try {
       await storageUserRemove()
+      await storageAuthTokenRemove()
       setUser({} as UserDTO)
     } catch (error) {
       throw error
@@ -31,11 +32,12 @@ export function AuthContextProvider({children}: AuthContextProviderProps) {
 
   async function signIn(email: string, password: string) {
     try {
-      const response = await api.post('/sessions', { email, password })
-      const { name, avatar, tel, id } = response.data.user
+      const { data } = await api.post('/sessions', { email, password })
+      const { name, avatar, tel, id } = data.user
 
       const user = { name, avatar, tel, id, email }
       await storageUserSave(user)
+      api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`
       setUser(user)
     } catch (error) {
       throw error
