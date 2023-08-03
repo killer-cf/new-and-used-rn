@@ -1,45 +1,14 @@
 export const formatCurrency = (value: string) => {
-  const hasNonNumericCharacter = /[^\d]$/.test(value)
-  if (hasNonNumericCharacter) return value.slice(0, -1)
+  const numericValue = value.replace(/[^\d]/g, '')
 
-  if (value.length === 1) {
-    let newArray = ['0', ',', '0', value]
-    return newArray.join('')
+  if (numericValue.length === 0) {
+    return '0,00'
   }
 
-  if (value.length >= 2 && value.length <= 5) {
-    let [int, dec] = value.replace('.', ',').split(',')
+  const intValue = numericValue.slice(0, -2) || '0'
+  const decValue = numericValue.slice(-2).padStart(2, '0')
 
-    if (Number(int) === 0 ) {
-      dec = String(parseInt(dec))
-    }
-    if (dec.length === 3) {
-      var i = int.split('')
-      i.push(String(dec[0]))
-      int = String(parseInt(i.join('')))
-      dec = dec.substring(1)
-    } else if (dec.length < 2){
-      var i = int.split('')
-      const removeLastFromI = i.pop() as string
-      dec = dec = removeLastFromI + dec
-      int = i.join('')
-      if (int === '') int = '0'
-    }
-    return int + ',' + dec
-  }
-  if (value.length >= 6) {
-    let [int, dec] = value.replaceAll('.', '').split(',')
-    var i = int.split('')
-    if (dec.length < 2) {
-      const removeLastFromI = i.pop() as string
-      dec = dec = removeLastFromI + dec
-    } else {
-      i.push(String(dec[0]))
-      dec = dec.substring(1)
-    }
-    int = String(parseInt(i.join('')))
-    int = Number(int).toLocaleString('pt-BR')
+  const formattedValue = Number(intValue).toLocaleString('pt-BR')
 
-    return int + ',' + dec
-  }
+  return `${formattedValue},${decValue}`
 }
