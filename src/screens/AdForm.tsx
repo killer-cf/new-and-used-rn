@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useCallback, useState } from "react";
+import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
 import { Box, Checkbox, FormControl, HStack, Heading, Icon, Image, Pressable, Radio, ScrollView, Switch, Text, TextArea, VStack, useTheme, useToast } from "native-base";
 import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
@@ -26,7 +26,7 @@ const adFormSchema = yup.object({
   price: yup.string().required('Informe o preço do produto'),
   accept_trade: yup.boolean().required(),
   payment_methods: yup.array(yup.string().required()).required('Informe ao menos 1 método de pagamento'),
-  images: yup.array().required('Adicione ao menos 1 imagem')
+  images: yup.array().min(1, 'Adicione ao menos 1 imagem').required()
 })
 
 export type AdFormData = yup.InferType<typeof adFormSchema>
@@ -34,8 +34,6 @@ export type AdFormData = yup.InferType<typeof adFormSchema>
 export function AdForm() {
   const route = useRoute()
   const params = route.params as AdFormData
-
-  console.log(params?.price)
 
   const { control, handleSubmit, reset, clearErrors, setValue, formState: { errors, isSubmitting } } = useForm<AdFormData>({
     resolver: yupResolver(adFormSchema),
@@ -49,7 +47,8 @@ export function AdForm() {
       images: params?.images ?? [],
     }
   })
-  const [photos, setPhotos] = useState<ImagePicker.ImagePickerAsset[]>(params?.images ?? [])
+
+  const [photos, setPhotos] = useState<ImagePicker.ImagePickerAsset[]>([])
 
   const { colors } = useTheme()
   const toast = useToast()
@@ -57,8 +56,8 @@ export function AdForm() {
   const navigation = useNavigation<AppNavigatorRoutesProps>()
 
   function handleGoPreview(data: AdFormData) {
-    clearErrors()
     reset()
+    setPhotos([])
     navigation.navigate('pre_ad', data)
   }
 
@@ -95,7 +94,13 @@ export function AdForm() {
     const newPhotos = [...photos]
     newPhotos.splice(index, 1)
     setPhotos(newPhotos);
+    setValue('images', newPhotos)
   }
+  
+  useFocusEffect(useCallback(() => {
+    clearErrors()
+    setPhotos(params?.images || [])
+  }, [params?.images]))
 
   return (
     <VStack bg={"gray.200"} safeAreaTop flex={1} px={6} pt={5} >
@@ -143,6 +148,11 @@ export function AdForm() {
           }
             
         </HStack>
+        {errors.images?.message && 
+          <Text color={"red.500"} fontSize={'xs'} mt={2}>
+            {errors.images?.message}
+          </Text>
+        }
 
         <Heading fontFamily={"heading"} fontSize={'md'} color={"gray.600"} mt={6} mb={1}>
           Sobre o produto
