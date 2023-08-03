@@ -80,6 +80,10 @@ export function PreAd() {
     }
   }
 
+  function handleGoBack() {
+    navigation.navigate('ad_form', params)
+  }
+
   return (
     <VStack safeAreaTop flex={1} bg={"lightBlue.500"}>
       <VStack bg={"lightBlue.500"} w={"full"} py={4} >
@@ -149,7 +153,14 @@ export function PreAd() {
         </VStack>
       </ScrollView>
       <HStack bg={"gray.200"} px={6} pt={5} position={'fixed'} bottom={1} safeAreaBottom>
-        <Button text="Voltar e editar" flex={1} buttonColor="white-gray" icon={<ArrowLeft size={20} />} mr={3}/>
+        <Button 
+          text="Voltar e editar" 
+          onPress={handleGoBack}
+          flex={1} 
+          buttonColor="white-gray" 
+          icon={<ArrowLeft size={20} />} 
+          mr={3}
+        />
         <Button 
           text="Publicar"
           onPress={handleSubmitAdForm}

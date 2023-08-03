@@ -4,7 +4,6 @@ import { Box, useTheme } from "native-base";
 import { AppRoutes } from "./app.routes";
 import { FilterModalProvider } from "@contexts/FilterModalProvider";
 import { useAuth } from "@hooks/useAuth";
-import { AuthContextProvider } from "@contexts/AuthContext";
 
 export function Routes() {
   const { colors } = useTheme()
@@ -12,8 +11,6 @@ export function Routes() {
 
   const theme = DefaultTheme
   theme.colors.background = colors.gray[200]
-
-  console.log(user)
 
   return (
     <FilterModalProvider>

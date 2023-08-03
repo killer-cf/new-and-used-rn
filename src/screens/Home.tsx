@@ -9,12 +9,15 @@ import { AdCard } from "@components/AdCard";
 import { ModalContext } from "@contexts/FilterModalProvider";
 import { useAuth } from "@hooks/useAuth";
 import { api } from "@services/api";
+import { useNavigation } from "@react-navigation/native";
+import { AppNavigatorRoutesProps } from "@routes/app.routes";
 
 export function Home() {
   const { colors } = useTheme()
   const ads = [1,2,3,4,5,6,7,8,9]
   const { openModal } = useContext(ModalContext)
   const { user } = useAuth()
+  const navigation = useNavigation<AppNavigatorRoutesProps>()
 
   const adsPairs: any = []
   for (let i = 0; i < ads.length; i += 2) {
@@ -23,6 +26,10 @@ export function Home() {
 
   function handlePresentModalPress() {
     openModal()
+  }
+
+  function handleGoAdForm() {
+    navigation.navigate('ad_form')
   }
 
   return (
@@ -35,8 +42,9 @@ export function Home() {
               <Heading fontFamily={"heading"} color={"gray.700"} fontSize={"md"}>{user.name}!</Heading>
             </VStack>
             <Button
+              text="Criar anúncio"
+              onPress={handleGoAdForm} 
               ml={3} 
-              text="Criar anúncio" 
               flex={1} 
               buttonColor="gray" 
               icon={<Plus color={colors.gray[100]} size={16}/>}

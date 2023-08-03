@@ -15,10 +15,7 @@ type AppRoutes = {
   ad: undefined
   logout: undefined
   my_ads: undefined
-  ad_form?: {
-    id: string
-    name: string
-  }
+  ad_form?: AdFormData
   pre_ad: AdFormData
 }
 

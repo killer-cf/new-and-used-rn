@@ -32,22 +32,34 @@ const adFormSchema = yup.object({
 export type AdFormData = yup.InferType<typeof adFormSchema>
 
 export function AdForm() {
-  const { control, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm<AdFormData>({
-    resolver: yupResolver(adFormSchema)
-  })
-  const [photos, setPhotos] = useState<ImagePicker.ImagePickerAsset[]>([])
-
   const route = useRoute()
+  const params = route.params as AdFormData
+
+  console.log(params?.price)
+
+  const { control, handleSubmit, reset, clearErrors, setValue, formState: { errors, isSubmitting } } = useForm<AdFormData>({
+    resolver: yupResolver(adFormSchema),
+    values: {
+      name: params?.name ?? '',
+      description: params?.description ?? '',
+      price: params?.price ?? '0,00',
+      state: params?.state ?? 'new_product',
+      accept_trade: params?.accept_trade ?? false,
+      payment_methods: params?.payment_methods ?? [],
+      images: params?.images ?? [],
+    }
+  })
+  const [photos, setPhotos] = useState<ImagePicker.ImagePickerAsset[]>(params?.images ?? [])
+
   const { colors } = useTheme()
   const toast = useToast()
   
   const navigation = useNavigation<AppNavigatorRoutesProps>()
 
-  const params  = route.params as AdFormParams
-
   function handleGoPreview(data: AdFormData) {
+    clearErrors()
+    reset()
     navigation.navigate('pre_ad', data)
-    console.log(data)
   }
 
   async function handleSelectPhotos() {
@@ -237,8 +249,8 @@ export function AdForm() {
           render={({ field: { value, onChange }}) => (
             <Input 
               placeholder="Valor do produto"
-              value={formatCurrency(value)}
-              onChangeText={onChange}
+              value={value}
+              onChangeText={(text) => onChange(formatCurrency(text))}
               errorMessage={errors.price?.message}
               mt={3}
               leftElement={
@@ -268,7 +280,7 @@ export function AdForm() {
           control={control}
           render={({ field: { value, onChange }}) => (
             <>
-              <Checkbox.Group value={value} onChange={onChange} flex={1} accessibilityLabel="selecione os meios de pagamento aceitos">
+              <Checkbox.Group defaultValue={[]} value={value} onChange={onChange} flex={1} accessibilityLabel="selecione os meios de pagamento aceitos">
                 <HStack alignItems={"center"} mb={2}>
                   <Checkbox  value="boleto" accessibilityLabel="Boleto?" _checked={{backgroundColor: 'lightBlue.500', borderColor: 'lightBlue.500'}}/>
                   <Text ml={2} fontFamily={"body"} fontSize={"md"}>Boleto</Text>
