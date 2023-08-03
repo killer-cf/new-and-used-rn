@@ -28,7 +28,7 @@ export const formatCurrency = (value: string) => {
     return int + ',' + dec
   }
   if (value.length >= 6) {
-    let [int, dec] = value.replace('.', '').split(',')
+    let [int, dec] = value.replaceAll('.', '').split(',')
     var i = int.split('')
     if (dec.length < 2) {
       const removeLastFromI = i.pop() as string
