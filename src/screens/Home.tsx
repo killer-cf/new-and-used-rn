@@ -1,6 +1,7 @@
-import { useContext } from "react";
-import { Box, Divider, HStack, Heading, Pressable, ScrollView, Text, VStack, View, useTheme } from "native-base";
+import { useCallback, useContext, useState } from "react";
+import { Box, Divider, HStack, Heading, Pressable, ScrollView, Text, VStack, View, useTheme, useToast } from "native-base";
 import { ArrowRight, MagnifyingGlass, Plus, Sliders, Tag } from "phosphor-react-native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 import { Button } from "@components/Button";
 import { UserAvatar } from "@components/UserAvatar";
@@ -9,15 +10,17 @@ import { AdCard } from "@components/AdCard";
 import { ModalContext } from "@contexts/FilterModalProvider";
 import { useAuth } from "@hooks/useAuth";
 import { api } from "@services/api";
-import { useNavigation } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
+import { AppError } from "@utils/AppError";
+import { AdDTO } from "@dtos/AdDTO";
 
 export function Home() {
   const { colors } = useTheme()
-  const ads = [1,2,3,4,5,6,7,8,9]
+  const [ads, setAds] = useState([]) 
   const { openModal } = useContext(ModalContext)
   const { user } = useAuth()
   const navigation = useNavigation<AppNavigatorRoutesProps>()
+  const toast = useToast()
 
   const adsPairs: any = []
   for (let i = 0; i < ads.length; i += 2) {
@@ -31,6 +34,27 @@ export function Home() {
   function handleGoAdForm() {
     navigation.navigate('ad_form')
   }
+
+  async function fetchAds() {
+    try {
+      const response = await api.get('/products')
+      setAds(response.data)
+
+    } catch (error) {
+      const isAppError = error instanceof AppError
+      const title = isAppError ? error.message : 'Não foi possível carregar os anúncios, tente novamente!'
+
+      toast.show({
+        title,
+        placement: 'top',
+        color: 'red.500'
+      })
+    }
+  }
+
+  useFocusEffect(useCallback(() => {
+    fetchAds()
+  }, []))
 
   return (
       <VStack bg={"gray.200"} safeAreaTop flex={1} px={6} pt={5} >
@@ -92,10 +116,10 @@ export function Home() {
           />
           
           <VStack mt={6}>
-            {adsPairs.map((ad: any) => (
-              <HStack key={ad}>
-                <AdCard mr={4} />
-                {ad[1] ? <AdCard key={ad[1]} /> : <Box flex={1} />}
+            {adsPairs.map((ads: AdDTO[]) => (
+              <HStack key={ads[0].id}>
+                <AdCard adData={ads[0]} mr={4} />
+                {ads[1] ? <AdCard adData={ads[1]}/> : <Box flex={1} />}
               </HStack>
             ))}
           </VStack>
