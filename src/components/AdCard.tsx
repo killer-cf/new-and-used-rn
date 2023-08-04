@@ -1,4 +1,4 @@
-import { Box, Heading, IBoxProps, Image, Pressable, Text } from "native-base";
+import { Box, Heading, IBoxProps, Image, Pressable, Skeleton, Text } from "native-base";
 
 import { Tag } from "./Tag";
 import { UserAvatar } from "./UserAvatar";
@@ -8,6 +8,7 @@ import { AdDTO } from "@dtos/AdDTO";
 import { formatCurrency } from "@utils/formatCurrency";
 import { api } from "@services/api";
 import { useAuth } from "@hooks/useAuth";
+import { useState } from "react";
 
 type Props = IBoxProps & {
   isAdDisabled?: boolean
@@ -17,12 +18,18 @@ type Props = IBoxProps & {
 export function AdCard({ isAdDisabled = false, adData, ...rest }: Props) {
   const navigation = useNavigation<AppNavigatorRoutesProps>()
   const { user } = useAuth()
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   function handleGoAdPage() {
     navigation.navigate('ad')
   }
 
   const avatarUrl = adData.user ? `${api.defaults.baseURL}/images/${adData.user.avatar}` : `${api.defaults.baseURL}/images/${user.avatar}`;
+  const productImageLoad = `${api.defaults.baseURL}/images/${adData.product_images[0].path}`
+
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+  };
 
   return (
     <Box
@@ -33,12 +40,16 @@ export function AdCard({ isAdDisabled = false, adData, ...rest }: Props) {
     >
       <Pressable w={"full"} onPress={handleGoAdPage}>
         <Image 
-          source={{ uri: `${api.defaults.baseURL}/images/${adData.product_images[0].path}`}}
+          source={{ uri: productImageLoad}}
+          onLoad={handleImageLoad}
           alt={`foto do ${adData.name}`}
           w={"full"}
           h={120}    
           rounded={'lg'} 
         />
+        {!imageLoaded && 
+          <Skeleton position={"absolute"} rounded={"lg"} w={"full"} h={120} bgColor={"gray.400"} zIndex={2}/>
+        }
         <UserAvatar
           source={{ uri: avatarUrl}}
           siz="xs" 
