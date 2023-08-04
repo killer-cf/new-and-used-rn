@@ -1,15 +1,20 @@
-import { Box, HStack, ScrollView, Text, VStack } from "native-base";
+import { useCallback, useState } from "react";
+import { Box, HStack, ScrollView, Text, VStack, useToast } from "native-base";
 import { Plus } from "phosphor-react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 import { Header } from "@components/Header";
 import { Select } from "@components/Select";
 import { AdCard } from "@components/AdCard";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
+import { api } from "@services/api";
+import { AppError } from "@utils/AppError";
+import { AdDTO } from "@dtos/AdDTO";
 
 export function MyAds() {
   const selectOptions = ['Todos', 'Ativos', 'Inativos']  
-  const ads = [1,2,3,4,5]
+  const [ads, setAds] = useState([]) 
+  const toast = useToast()
   
   const navigation = useNavigation<AppNavigatorRoutesProps>()
 
@@ -21,6 +26,27 @@ export function MyAds() {
   function handlePressPlus() {
     navigation.navigate('ad_form')
   }
+
+  async function fetchAds() {
+    try {
+      const response = await api.get('/users/products')
+      setAds(response.data)
+
+    } catch (error) {
+      const isAppError = error instanceof AppError
+      const title = isAppError ? error.message : 'Não foi possível carregar os anúncios, tente novamente!'
+
+      toast.show({
+        title,
+        placement: 'top',
+        color: 'red.500'
+      })
+    }
+  }
+
+  useFocusEffect(useCallback(() => {
+    fetchAds()
+  }, []))
 
   return (
     <VStack bg={"gray.200"} safeAreaTop flex={1} px={6} pt={5} >
@@ -38,11 +64,11 @@ export function MyAds() {
         </HStack>
 
         <VStack mt={6}>
-          {myAdsPairs.map((ad: any) => (
-            <HStack key={ad}>
-              <AdCard key={ad[0]} mr={4} />
-              {ad[1] ? <AdCard key={ad[1]} /> : <Box flex={1} />}
-            </HStack>
+          {myAdsPairs.map((ads: AdDTO[]) => (
+            <HStack key={ads[0].id}>
+              <AdCard adData={ads[0]} mr={4} />
+              {ads[1] ? <AdCard adData={ads[1]}/> : <Box flex={1} />}
+          </HStack>
           ))}
         </VStack>
       </ScrollView>

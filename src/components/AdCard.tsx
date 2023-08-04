@@ -7,6 +7,7 @@ import { AppNavigatorRoutesProps } from "@routes/app.routes";
 import { AdDTO } from "@dtos/AdDTO";
 import { formatCurrency } from "@utils/formatCurrency";
 import { api } from "@services/api";
+import { useAuth } from "@hooks/useAuth";
 
 type Props = IBoxProps & {
   isAdDisabled?: boolean
@@ -15,10 +16,13 @@ type Props = IBoxProps & {
 
 export function AdCard({ isAdDisabled = false, adData, ...rest }: Props) {
   const navigation = useNavigation<AppNavigatorRoutesProps>()
+  const { user } = useAuth()
 
   function handleGoAdPage() {
     navigation.navigate('ad')
   }
+
+  const avatarUrl = adData.user ? `${api.defaults.baseURL}/images/${adData.user.avatar}` : `${api.defaults.baseURL}/images/${user.avatar}`;
 
   return (
     <Box
@@ -36,7 +40,7 @@ export function AdCard({ isAdDisabled = false, adData, ...rest }: Props) {
           rounded={'lg'} 
         />
         <UserAvatar
-          source={{ uri: `${api.defaults.baseURL}/images/${adData.user.avatar}`}}
+          source={{ uri: avatarUrl}}
           siz="xs" 
           position={"absolute"} 
           top={1}

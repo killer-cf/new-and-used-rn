@@ -42,7 +42,7 @@ export function Home() {
 
     } catch (error) {
       const isAppError = error instanceof AppError
-      const title = isAppError ? error.message : 'Não foi possível carregar os anúncios, tente novamente!'
+      const title = isAppError ? error.message : 'Não foi possível carregar seus anúncios, tente novamente!'
 
       toast.show({
         title,
