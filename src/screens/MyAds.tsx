@@ -10,11 +10,15 @@ import { AppNavigatorRoutesProps } from "@routes/app.routes";
 import { api } from "@services/api";
 import { AppError } from "@utils/AppError";
 import { AdDTO } from "@dtos/AdDTO";
+import { Loading } from "@components/Loading";
 
 export function MyAds() {
-  const selectOptions = ['Todos', 'Ativos', 'Inativos']  
   const [ads, setAds] = useState([]) 
+  const [ isLoading, setIsLoading ] = useState(true) 
+  
   const toast = useToast()
+
+  const selectOptions = ['Todos', 'Ativos', 'Inativos']  
   
   const navigation = useNavigation<AppNavigatorRoutesProps>()
 
@@ -29,6 +33,7 @@ export function MyAds() {
 
   async function fetchAds() {
     try {
+      setIsLoading(true)
       const response = await api.get('/users/products')
       setAds(response.data)
 
@@ -41,6 +46,8 @@ export function MyAds() {
         placement: 'top',
         color: 'red.500'
       })
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -63,14 +70,16 @@ export function MyAds() {
           <Select selectOptions={selectOptions} defaultOption="Todos"/>
         </HStack>
 
-        <VStack mt={6}>
-          {myAdsPairs.map((ads: AdDTO[]) => (
-            <HStack key={ads[0].id}>
-              <AdCard adData={ads[0]} mr={4} />
-              {ads[1] ? <AdCard adData={ads[1]}/> : <Box flex={1} />}
-          </HStack>
-          ))}
-        </VStack>
+        {isLoading ? <Loading h={600} /> : 
+          <VStack mt={6}>
+            {myAdsPairs.map((ads: AdDTO[]) => (
+              <HStack key={ads[0].id}>
+                <AdCard adData={ads[0]} mr={4} />
+                {ads[1] ? <AdCard adData={ads[1]}/> : <Box flex={1} />}
+              </HStack>
+            ))}
+          </VStack>
+        }
       </ScrollView>
     </VStack>
   )
