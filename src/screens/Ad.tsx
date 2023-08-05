@@ -14,6 +14,8 @@ import { api } from "@services/api";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
 import { AdDTO } from "@dtos/AdDTO";
 import { PaymentMethod } from "@components/PaymentMethod";
+import { formatCurrency } from "@utils/formatCurrency";
+import { Alert } from "react-native";
 
 type AdParams = {
   id: string
@@ -36,7 +38,6 @@ export function Ad() {
       setIsLoading(true)
       const response = await api.get(`/products/${adId}`)
       setAd(response.data)
-      console.log(response.data.product_images)
       setIsLoading(false)
     } catch (error) {
       const isAppError = error instanceof AppError
@@ -59,6 +60,38 @@ export function Ad() {
     setImageLoaded(true)
   }
 
+  function handleDeleteAd() {
+    Alert.alert('Excluir', `Certeza que deseja excluir o anúncio "${ad?.name}"?`, [
+      { text: 'Sim', onPress: () => deleteAd() },
+      { text: 'Não'},
+    ])
+  }
+
+  async function deleteAd() {
+    try {
+      await api.delete(`/products/${ad?.id}`)
+      navigation.goBack() 
+
+      toast.show({
+        title: `Anúncio ${ad?.name} excluído com sucesso!`,
+        placement: 'top',
+        color: 'green.500'
+      })
+
+    } catch (error) {
+      const isAppError = error instanceof AppError
+      const title = isAppError ? error.message : 'Não foi possível deletar o anúncio!'
+
+      toast.show({
+        title,
+        placement: 'top',
+        color: 'red.500'
+      })
+
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   useFocusEffect(useCallback(() => {
     getAd(params.id)
@@ -123,7 +156,7 @@ export function Ad() {
             </Heading>
             <HStack>
               <Text pt={1} fontSize={'sm'} color={"lightBlue.500"} fontFamily={"heading"}>R$ </Text>
-              <Heading fontSize={'xl'} color={"lightBlue.500"} fontFamily={"heading"}>1.200,00</Heading>
+              <Heading fontSize={'xl'} color={"lightBlue.500"} fontFamily={"heading"}>{formatCurrency(ad?.price.toString() || '')}</Heading>
             </HStack>
           </HStack>
           <Text color={"gray.600"} fontSize={'sm'} mb={6}>
@@ -153,7 +186,7 @@ export function Ad() {
                     <Button text="Desativar anúncio" buttonColor="gray" icon={<Power color={colors.gray[100]} />} mb={3}/> :
                     <Button text="Reativar anúncio" buttonColor="blue" icon={<Power color={colors.gray[100]} />} mb={3}/>
                 }    
-                <Button text="Excluir anúncio" buttonColor="white-gray" icon={<Trash />}/>
+                <Button text="Excluir anúncio" onPress={handleDeleteAd} buttonColor="white-gray" icon={<Trash />}/>
               </VStack>
             ) : (
               <HStack mt={8}>
