@@ -1,0 +1,1 @@
+export type PaymentMethodsType = 'pix' | 'cash' | 'boleto' | 'card' | 'deposit'

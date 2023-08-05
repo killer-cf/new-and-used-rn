@@ -21,7 +21,7 @@ export function AdCard({ isAdDisabled = false, adData, ...rest }: Props) {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   function handleGoAdPage() {
-    navigation.navigate('ad')
+    navigation.navigate('ad', { id: adData.id })
   }
 
   const avatarUrl = adData.user ? `${api.defaults.baseURL}/images/${adData.user.avatar}` : `${api.defaults.baseURL}/images/${user.avatar}`;

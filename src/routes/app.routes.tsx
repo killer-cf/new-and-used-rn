@@ -12,7 +12,7 @@ import { useAuth } from '@hooks/useAuth';
 
 type AppRoutes = {
   home: undefined
-  ad: undefined
+  ad: { id: string }
   logout: undefined
   my_ads: undefined
   ad_form?: AdFormData

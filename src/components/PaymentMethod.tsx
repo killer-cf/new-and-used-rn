@@ -1,8 +1,7 @@
+import { PaymentMethodsType } from "@dtos/PaymentMethodDTO";
 import { HStack, Text } from "native-base";
 import { IHStackProps } from "native-base/lib/typescript/components/primitives/Stack/HStack";
 import { Bank, Barcode, CreditCard, Money, QrCode } from "phosphor-react-native";
-
-export type PaymentMethodsType = 'pix' | 'cash' | 'boleto' | 'card' | 'deposit'
 
 type Props = IHStackProps & {
   title: PaymentMethodsType

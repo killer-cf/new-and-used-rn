@@ -1,17 +1,72 @@
-import { Box, HStack, Heading, Image, ScrollView, Text, VStack, useTheme } from "native-base";
-import { Bank, Barcode, CreditCard, Money, PencilSimpleLine, Power, QrCode, Trash, WhatsappLogo } from "phosphor-react-native";
+import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
+import { Box, HStack, Heading, Image, ScrollView, Skeleton, Text, VStack, useTheme, useToast } from "native-base";
+import { PencilSimpleLine, Power, Trash, WhatsappLogo } from "phosphor-react-native";
 
-import BikeImg from "@assets/bike.png"
 import { Header } from "@components/Header";
 import { MultiStep } from "@components/MultiStep";
 import { UserAvatar } from "@components/UserAvatar";
 import { Tag } from "@components/Tag";
 import { Button } from "@components/Button";
+import { useCallback, useState } from "react";
+import { Loading } from "@components/Loading";
+import { AppError } from "@utils/AppError";
+import { api } from "@services/api";
+import { AppNavigatorRoutesProps } from "@routes/app.routes";
+import { AdDTO } from "@dtos/AdDTO";
+import { PaymentMethod } from "@components/PaymentMethod";
+
+type AdParams = {
+  id: string
+}
 
 export function Ad() {
+  const [isLoading, setIsLoading] = useState(true)
+  const [ad, setAd] = useState<AdDTO>()
   const { colors } = useTheme()
+  const toast = useToast()
   const isAdOwner = true
-  const isAdActive = false
+
+  const route = useRoute()
+  const navigation = useNavigation<AppNavigatorRoutesProps>()
+  const params = route.params as AdParams
+  const [imageLoaded, setImageLoaded] = useState(false)
+
+  async function getAd(adId: string) {
+    try {
+      setIsLoading(true)
+      const response = await api.get(`/products/${adId}`)
+      setAd(response.data)
+      console.log(response.data.product_images)
+      setIsLoading(false)
+    } catch (error) {
+      const isAppError = error instanceof AppError
+      const title = isAppError ? error.message : 'Não foi possível carregar o anúncio, tente novamente!'
+
+      toast.show({
+        title,
+        placement: 'top',
+        color: 'red.500'
+      })
+
+      setIsLoading(false)
+      navigation.goBack() 
+    }
+  }
+
+  const productImageLoad = `${api.defaults.baseURL}/images/${ad?.product_images[0].path}`
+
+  const handleImageLoad = () => {
+    setImageLoaded(true)
+  }
+
+
+  useFocusEffect(useCallback(() => {
+    getAd(params.id)
+  }, [params.id]))
+
+  if (isLoading) {
+    return <Loading />
+  }
 
   return (
     <VStack bg={"gray.200"} safeAreaTop flex={1}  >
@@ -22,16 +77,19 @@ export function Ad() {
         h={'270px'}
         >
           <Image 
-            source={BikeImg}
-            alt="nome do produto"
+            source={{ uri: productImageLoad}}
+            onLoad={handleImageLoad}
+            alt={`foto do ${ad?.name}`}
             w={"full"}
             h={"full"}
             resizeMode="cover"
-            bg={"green.200"}
           />
           <MultiStep size={3} currentStep={1}/>
+          {!imageLoaded && 
+            <Skeleton position={"absolute"} rounded={"lg"} w={"full"} h={"full"} bgColor={"gray.400"} zIndex={2}/>
+          }
           {
-          !isAdActive &&
+          !ad?.is_active &&
           <>
             <Box position={"absolute"} w={"full"} h={"full"} bg={"gray.700"} opacity={0.5} />        
             <Box 
@@ -54,14 +112,14 @@ export function Ad() {
               mr={2}
             />
             <Text color={"gray.600"} fontSize={'sm'}>
-              Kilder Filho
+              {ad?.user.name}
             </Text>
           </HStack>
 
           <Tag title="NOVO" alignSelf={'start'}/>
           <HStack justifyContent={"space-between"} alignItems={"center"}>
             <Heading fontFamily={"heading"} fontSize={"xl"} color={"gray.700"} my={2}>
-              Bicicleta
+              {ad?.name}
             </Heading>
             <HStack>
               <Text pt={1} fontSize={'sm'} color={"lightBlue.500"} fontFamily={"heading"}>R$ </Text>
@@ -69,7 +127,7 @@ export function Ad() {
             </HStack>
           </HStack>
           <Text color={"gray.600"} fontSize={'sm'} mb={6}>
-            Cras congue cursus in tortor sagittis placerat nunc, tellus arcu. Vitae ante leo eget maecenas urna mattis cursus. Mauris metus amet nibh mauris mauris accumsan, euismod. Aenean leo nunc, purus iaculis in aliquam.
+            {ad?.description}
           </Text>
 
           <HStack alignItems={"center"}>
@@ -77,47 +135,21 @@ export function Ad() {
               Aceita troca?
             </Heading>
             <Text color={"gray.600"} fontSize={'sm'} ml={2}>
-              Sim
+              {ad?.accept_trade ? 'Sim' : 'Não'}
             </Text>
           </HStack>
 
           <Heading fontFamily={"heading"} fontSize={'sm'} color={"gray.600"} mt={3} mb={2}>
             Meios de pagamento:
           </Heading>
-          <HStack  mb={1}>
-            <Barcode />
-            <Text color={"gray.600"} fontSize={'sm'} ml={2}>
-              Boleto
-            </Text>
-          </HStack>
-          <HStack  mb={1}>
-            <QrCode />
-            <Text color={"gray.600"} fontSize={'sm'} ml={2}>
-              Pix
-            </Text>
-          </HStack>
-          <HStack  mb={1}>
-            <Money />
-            <Text color={"gray.600"} fontSize={'sm'} ml={2}>
-              Dinheiro
-            </Text>
-          </HStack>
-          <HStack  mb={1}>
-            <CreditCard />
-            <Text color={"gray.600"} fontSize={'sm'} ml={2}>
-              Cartão de Crédito
-            </Text>
-          </HStack>
-          <HStack  mb={1}>
-            <Bank />
-            <Text color={"gray.600"} fontSize={'sm'} ml={2}>
-              Depósito Bancário
-            </Text>
-          </HStack>
+          {ad?.payment_methods.map(paymentMethod => (
+            <PaymentMethod key={paymentMethod.key} title={paymentMethod.key} />
+          ))}
+
           {
             isAdOwner ? (
               <VStack mt={8}>
-                { isAdActive ? 
+                { ad?.is_active ? 
                     <Button text="Desativar anúncio" buttonColor="gray" icon={<Power color={colors.gray[100]} />} mb={3}/> :
                     <Button text="Reativar anúncio" buttonColor="blue" icon={<Power color={colors.gray[100]} />} mb={3}/>
                 }    
