@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { Box, HStack, ScrollView, Text, VStack, useToast } from "native-base";
 import { Plus } from "phosphor-react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useQuery } from "@tanstack/react-query"
 
 import { Header } from "@components/Header";
 import { Select } from "@components/Select";
@@ -13,18 +14,21 @@ import { AdDTO } from "@dtos/AdDTO";
 import { Loading } from "@components/Loading";
 
 export function MyAds() {
-  const [ads, setAds] = useState([]) 
-  const [ isLoading, setIsLoading ] = useState(true) 
-  
   const toast = useToast()
 
   const selectOptions = ['Todos', 'Ativos', 'Inativos']  
   
   const navigation = useNavigation<AppNavigatorRoutesProps>()
 
+  const { data: myAds, refetch, isInitialLoading } = useQuery<AdDTO[]>({
+    queryKey: ['myAds'],
+    queryFn: fetchAds,
+    initialData: []
+  })
+
   const myAdsPairs: any = []
-  for (let i = 0; i < ads.length; i += 2) {
-    myAdsPairs.push([ads[i], ads[i + 1]])
+  for (let i = 0; i < myAds.length; i += 2) {
+    myAdsPairs.push([myAds[i], myAds[i + 1]])
   }
 
   function handlePressPlus() {
@@ -33,10 +37,8 @@ export function MyAds() {
 
   async function fetchAds() {
     try {
-      setIsLoading(true)
       const response = await api.get('/users/products')
-      setAds(response.data)
-
+      return response.data
     } catch (error) {
       const isAppError = error instanceof AppError
       const title = isAppError ? error.message : 'Não foi possível carregar os anúncios, tente novamente!'
@@ -46,13 +48,11 @@ export function MyAds() {
         placement: 'top',
         color: 'red.500'
       })
-    } finally {
-      setIsLoading(false)
     }
   }
 
   useFocusEffect(useCallback(() => {
-    fetchAds()
+    refetch()
   }, []))
 
   return (
@@ -70,7 +70,7 @@ export function MyAds() {
           <Select selectOptions={selectOptions} defaultOption="Todos"/>
         </HStack>
 
-        {isLoading ? <Loading h={600} /> : 
+        {isInitialLoading ? <Loading h={600} /> : 
           <VStack mt={6}>
             {myAdsPairs.map((ads: AdDTO[]) => (
               <HStack key={ads[0].id}>

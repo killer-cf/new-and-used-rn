@@ -2,6 +2,7 @@ import { useCallback, useContext, useState } from "react";
 import { Box, Divider, HStack, Heading, Pressable, ScrollView, Text, VStack, View, useTheme, useToast } from "native-base";
 import { ArrowRight, MagnifyingGlass, Plus, Sliders, Tag } from "phosphor-react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useQuery } from "@tanstack/react-query"
 
 import { Button } from "@components/Button";
 import { UserAvatar } from "@components/UserAvatar";
@@ -16,13 +17,17 @@ import { AdDTO } from "@dtos/AdDTO";
 import { Loading } from "@components/Loading";
 
 export function Home() {
-  const [ads, setAds] = useState([]) 
-  const [isAdsLoading, setIsAdsLoading] = useState(true)
   const { colors } = useTheme()
   const { openModal } = useContext(ModalContext)
   const { user } = useAuth()
   const navigation = useNavigation<AppNavigatorRoutesProps>()
   const toast = useToast()
+
+  const { data: ads, refetch, isInitialLoading } = useQuery<AdDTO[]>({
+    queryKey: ['ads'],
+    queryFn: fetchAds,
+    initialData: []
+  })
 
   const adsPairs: any = []
   for (let i = 0; i < ads.length; i += 2) {
@@ -39,10 +44,8 @@ export function Home() {
 
   async function fetchAds() {
     try {
-      setIsAdsLoading(true)
       const response = await api.get('/products')
-      setAds(response.data)
-
+      return response.data
     } catch (error) {
       const isAppError = error instanceof AppError
       const title = isAppError ? error.message : 'Não foi possível carregar seus anúncios, tente novamente!'
@@ -52,13 +55,11 @@ export function Home() {
         placement: 'top',
         color: 'red.500'
       })
-    } finally {
-      setIsAdsLoading(false)
     }
   }
 
   useFocusEffect(useCallback(() => {
-    fetchAds()
+    refetch()
   }, []))
 
   return (
@@ -119,7 +120,7 @@ export function Home() {
               </HStack>
             }
           />
-          {isAdsLoading ? <Loading h={600} /> : (
+          {isInitialLoading ? <Loading h={600} /> : (
             <VStack mt={6}>
               {adsPairs.map((ads: AdDTO[]) => (
                 <HStack key={ads[0].id}>
