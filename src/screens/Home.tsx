@@ -13,10 +13,12 @@ import { api } from "@services/api";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
 import { AppError } from "@utils/AppError";
 import { AdDTO } from "@dtos/AdDTO";
+import { Loading } from "@components/Loading";
 
 export function Home() {
-  const { colors } = useTheme()
   const [ads, setAds] = useState([]) 
+  const [isAdsLoading, setIsAdsLoading] = useState(true)
+  const { colors } = useTheme()
   const { openModal } = useContext(ModalContext)
   const { user } = useAuth()
   const navigation = useNavigation<AppNavigatorRoutesProps>()
@@ -37,6 +39,7 @@ export function Home() {
 
   async function fetchAds() {
     try {
+      setIsAdsLoading(true)
       const response = await api.get('/products')
       setAds(response.data)
 
@@ -49,6 +52,8 @@ export function Home() {
         placement: 'top',
         color: 'red.500'
       })
+    } finally {
+      setIsAdsLoading(false)
     }
   }
 
@@ -114,15 +119,16 @@ export function Home() {
               </HStack>
             }
           />
-          
-          <VStack mt={6}>
-            {adsPairs.map((ads: AdDTO[]) => (
-              <HStack key={ads[0].id}>
-                <AdCard adData={ads[0]} mr={4} />
-                {ads[1] ? <AdCard adData={ads[1]}/> : <Box flex={1} />}
-              </HStack>
-            ))}
-          </VStack>
+          {isAdsLoading ? <Loading h={600} /> : (
+            <VStack mt={6}>
+              {adsPairs.map((ads: AdDTO[]) => (
+                <HStack key={ads[0].id}>
+                  <AdCard adData={ads[0]} mr={4} />
+                  {ads[1] ? <AdCard adData={ads[1]}/> : <Box flex={1} />}
+                </HStack>
+              ))}
+            </VStack>
+          )}
         </ScrollView>
       </VStack>
   )
