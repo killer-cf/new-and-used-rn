@@ -12,6 +12,7 @@ import { api } from "@services/api";
 import { AppError } from "@utils/AppError";
 import { AdDTO } from "@dtos/AdDTO";
 import { Loading } from "@components/Loading";
+import { pluralize } from "@utils/pluralize";
 
 export function MyAds() {
   const toast = useToast()
@@ -51,6 +52,8 @@ export function MyAds() {
     }
   }
 
+  const myAdsCount = myAds.length + pluralize(' anúncio', myAds.length)
+
   useFocusEffect(useCallback(() => {
     refetch()
   }, []))
@@ -66,7 +69,7 @@ export function MyAds() {
         />
 
         <HStack mt={6} justifyContent={"space-between"} w={"full"} alignItems={"center"}>
-          <Text flex={1} color={"gray.600"} fontSize={'sm'}>9 anúncios</Text>
+          <Text flex={1} color={"gray.600"} fontSize={'sm'}>{myAdsCount}</Text>
           <Select selectOptions={selectOptions} defaultOption="Todos"/>
         </HStack>
 
