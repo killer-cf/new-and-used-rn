@@ -62,6 +62,42 @@ export function Ad() {
     setImageLoaded(true)
   }
 
+  function handleToggleActivateAd() {
+    Alert.alert('Excluir', `Certeza que deseja ${ad?.is_active ? 'des' : 're' }ativar o anúncio "${ad?.name}"?`, [
+      { text: 'Sim', onPress: () => toggleActivateAd() },
+      { text: 'Não'},
+    ])
+  }
+
+  async function toggleActivateAd() {
+    try {
+      await api.patch(`/products/${ad?.id}`, {
+        is_active: !ad?.is_active,
+      })
+
+      toast.show({
+        title: `Anúncio ${ad?.name} ${ad?.is_active ? 'des' : '' }ativado com sucesso!`,
+        placement: 'top',
+        color: 'green.500'
+      })
+      
+      await getAd(params.id)
+
+    } catch (error) {
+      const isAppError = error instanceof AppError
+      const title = isAppError ? error.message : `Não foi possível ${ad?.is_active ? 'des' : 're' }ativar o anúncio!`
+
+      toast.show({
+        title,
+        placement: 'top',
+        color: 'red.500'
+      })
+
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   function handleDeleteAd() {
     Alert.alert('Excluir', `Certeza que deseja excluir o anúncio "${ad?.name}"?`, [
       { text: 'Sim', onPress: () => deleteAd() },
@@ -186,10 +222,13 @@ export function Ad() {
           {
             isAdOwner ? (
               <VStack mt={8}>
-                { ad?.is_active ? 
-                    <Button text="Desativar anúncio" buttonColor="gray" icon={<Power color={colors.gray[100]} />} mb={3}/> :
-                    <Button text="Reativar anúncio" buttonColor="blue" icon={<Power color={colors.gray[100]} />} mb={3}/>
-                }    
+                <Button
+                  text={ad?.is_active ? "Desativar anúncio" : "Reativar anúncio"}
+                  onPress={handleToggleActivateAd}
+                  buttonColor={ad?.is_active ? "gray" : "blue"}
+                  icon={<Power color={colors.gray[100]} />}
+                  mb={3}
+                />   
                 <Button text="Excluir anúncio" onPress={handleDeleteAd} buttonColor="white-gray" icon={<Trash />}/>
               </VStack>
             ) : (
