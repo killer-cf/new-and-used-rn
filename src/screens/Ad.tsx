@@ -180,7 +180,7 @@ export function Ad() {
         <VStack mt={5} px={6}>
           <HStack mb={6} alignItems={"center"}>
             <UserAvatar
-              source={{ uri: 'https://github.com/killer-cf.png'}}
+              source={{ uri: `${api.defaults.baseURL}/images/${ad?.user.avatar}`}}
               siz="sm"
               mr={2}
             />

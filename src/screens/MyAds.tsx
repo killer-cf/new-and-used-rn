@@ -74,8 +74,8 @@ export function MyAds() {
           <VStack mt={6}>
             {myAdsPairs.map((ads: AdDTO[]) => (
               <HStack key={ads[0].id}>
-                <AdCard adData={ads[0]} mr={4} />
-                {ads[1] ? <AdCard adData={ads[1]}/> : <Box flex={1} />}
+                <AdCard adData={ads[0]} isAdDisabled={!ads[0].is_active} mr={4} />
+                {ads[1] ? <AdCard adData={ads[1]} isAdDisabled={!ads[1].is_active} /> : <Box flex={1} />}
               </HStack>
             ))}
           </VStack>
