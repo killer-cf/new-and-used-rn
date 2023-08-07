@@ -18,4 +18,5 @@ export type AdDTO = {
     path: string
   }[]
   user: UserDTO
+  user_id: string
 }

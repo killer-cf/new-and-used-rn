@@ -16,6 +16,7 @@ import { AdDTO } from "@dtos/AdDTO";
 import { PaymentMethod } from "@components/PaymentMethod";
 import { formatCurrency } from "@utils/formatCurrency";
 import { Alert } from "react-native";
+import { useAuth } from "@hooks/useAuth";
 
 type AdParams = {
   id: string
@@ -25,8 +26,9 @@ export function Ad() {
   const [isLoading, setIsLoading] = useState(true)
   const [ad, setAd] = useState<AdDTO>()
   const { colors } = useTheme()
+  const { user: userLogged } = useAuth()
   const toast = useToast()
-  const isAdOwner = true
+  const isAdOwner = ad?.user_id === userLogged.id
 
   const route = useRoute()
   const navigation = useNavigation<AppNavigatorRoutesProps>()
@@ -101,6 +103,8 @@ export function Ad() {
     return <Loading />
   }
 
+  const formattedPrice = formatCurrency(ad?.price.toString() || '')
+
   return (
     <VStack bg={"gray.200"} safeAreaTop flex={1}  >
       <Header px={6} pt={5} mb={3} iconRight={isAdOwner && <PencilSimpleLine />}/>
@@ -156,7 +160,7 @@ export function Ad() {
             </Heading>
             <HStack>
               <Text pt={1} fontSize={'sm'} color={"lightBlue.500"} fontFamily={"heading"}>R$ </Text>
-              <Heading fontSize={'xl'} color={"lightBlue.500"} fontFamily={"heading"}>{formatCurrency(ad?.price.toString() || '')}</Heading>
+              <Heading fontSize={'xl'} color={"lightBlue.500"} fontFamily={"heading"}>{formattedPrice}</Heading>
             </HStack>
           </HStack>
           <Text color={"gray.600"} fontSize={'sm'} mb={6}>
@@ -192,7 +196,7 @@ export function Ad() {
               <HStack mt={8}>
                 <HStack flex={1}>
                   <Text pt={1} fontSize={'sm'} color={"lightBlue.500"} fontFamily={"heading"}>R$ </Text>
-                  <Heading fontSize={'2xl'} color={"lightBlue.500"} fontFamily={"heading"}>1.200,00</Heading>
+                  <Heading fontSize={'2xl'} color={"lightBlue.500"} fontFamily={"heading"}>{formattedPrice}</Heading>
                 </HStack>
                 <Button 
                   text="Entrar em contato" 
