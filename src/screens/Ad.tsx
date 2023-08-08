@@ -131,6 +131,29 @@ export function Ad() {
     }
   }
 
+  async function handleGoEditAd() {
+    if (!ad) return
+
+    const payment_methods = ad.payment_methods.map(pm => pm.key)
+    const images = ad.product_images.map(image => { 
+      return {
+        id: image.id,
+        uri: `${api.defaults.baseURL}/images/${image?.path}`
+      }
+    })
+
+    navigation.navigate('ad_form', {
+      id: ad.id,
+      name: ad.name,
+      price: ad.price.toString(),
+      state: ad.is_new ? 'new_product' : 'new_product',
+      accept_trade: ad.accept_trade,
+      description: ad.description,
+      payment_methods,
+      images,
+    })
+  }
+
   useFocusEffect(useCallback(() => {
     getAd(params.id)
   }, [params.id]))
@@ -143,7 +166,13 @@ export function Ad() {
 
   return (
     <VStack bg={"gray.200"} safeAreaTop flex={1}  >
-      <Header px={6} pt={5} mb={3} iconRight={isAdOwner && <PencilSimpleLine />}/>
+      <Header 
+        px={6} 
+        pt={5} 
+        mb={3} 
+        iconRight={isAdOwner && <PencilSimpleLine />}
+        onPressIconRight={handleGoEditAd}
+      />
       <ScrollView contentContainerStyle={{ paddingBottom: 30}}>
         <Box
         w={"full"}

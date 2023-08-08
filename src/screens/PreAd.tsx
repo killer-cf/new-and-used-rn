@@ -1,6 +1,5 @@
 import { Box, HStack, Heading, Image, ScrollView, Text, VStack, useTheme, useToast } from "native-base";
 import { ArrowLeft, Tag } from "phosphor-react-native";
-import * as ImagePicker from "expo-image-picker"
 
 import { MultiStep } from "@components/MultiStep";
 import { UserAvatar } from "@components/UserAvatar";
@@ -8,23 +7,31 @@ import { Tag as TagF } from "@components/Tag";
 import { Button } from "@components/Button";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { AdFormData } from "./AdForm";
-import { PaymentMethod, PaymentMethodsType } from "@components/PaymentMethod";
+import { PaymentMethod } from "@components/PaymentMethod";
 import { AppError } from "@utils/AppError";
 import { api } from "@services/api";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
+import { PaymentMethodsType } from "@dtos/PaymentMethodDTO";
+import { useState } from "react";
+
+type PreAdParams = {
+  data: AdFormData,
+  action: 'edit' | 'create'
+}
 
 export function PreAd() {
+  const [isSubmittingForm, setIsSubmittingForm] = useState(false)
+  
   const { colors } = useTheme()
-
   const route = useRoute()
   const toast = useToast()
   const navigation = useNavigation<AppNavigatorRoutesProps>()
 
-  const params = route.params as AdFormData
+  const params = route.params as PreAdParams
 
-  const { images, name, description, state, price, accept_trade, payment_methods } = params
+  const { images, name, description, state, price, accept_trade, payment_methods, id } = params.data
 
-  async function handleSubmitAdForm() {
+  async function handleCreateAd() {
     const product = {
       name,
       description,
@@ -35,12 +42,13 @@ export function PreAd() {
     }
 
     try {
+      setIsSubmittingForm(true)
       const productResponse = await api.post('/products', product)
 
       const productImagesForm = new FormData()
-      productImagesForm.append('product_id', productResponse.data.id)//
+      productImagesForm.append('product_id', productResponse.data.id)
 
-      images.forEach((image: ImagePicker.ImagePickerAsset, index) => {
+      images.forEach((image, index) => {
         const imageUri = image.uri
         const fileExtension = imageUri.split('.').pop()
 
@@ -60,6 +68,7 @@ export function PreAd() {
         }
       })
 
+      setIsSubmittingForm(false)
       navigation.navigate('home')
 
       toast.show({
@@ -77,11 +86,71 @@ export function PreAd() {
         placement: 'top',
         bgColor: 'red.500'
       })
+      setIsSubmittingForm(false)
+    }
+  }
+
+  async function handleEditAd() {
+    if (!id) return
+    try {
+      setIsSubmittingForm(true)
+      await api.put(`/products/${id}`, {
+        name,
+        description,
+        is_new: state === 'new_product' ? true : false,
+        price: parseFloat(price.replace('.', '').replace(',', '.')),
+        accept_trade,
+        payment_methods
+      })
+
+      const productImagesForm = new FormData()
+      productImagesForm.append('product_id', id)
+
+      images.forEach((image, index) => {
+        if (!image.id) {
+          const imageUri = image.uri
+          const fileExtension = imageUri.split('.').pop()
+
+          const imageFile = {
+            name: `${name.replace(' ', '_')}${index}.${fileExtension}`.toLowerCase(),
+            uri: imageUri,
+            type: `image/${fileExtension}`
+          } as any
+
+          productImagesForm.append('images', imageFile)
+        }
+      })
+
+      await api.post('/products/images', productImagesForm,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+
+      setIsSubmittingForm(false)
+      navigation.navigate('my_ads')
+
+      toast.show({
+        title: 'Produto editado com sucesso!',
+        placement: 'top',
+        bgColor: 'green.500'
+      })
+    } catch (error) {
+      const isAppError = error instanceof AppError
+      const title = isAppError ? error.message : 'Não foi possível editar seu anuncio, tente novamente mais tarde'
+
+      toast.show({
+        title,
+        placement: 'top',
+        bgColor: 'red.500'
+      })
+      setIsSubmittingForm(false)
     }
   }
 
   function handleGoBack() {
-    navigation.navigate('ad_form', params)
+    navigation.navigate('ad_form', params.data)
   }
 
   return (
@@ -162,9 +231,10 @@ export function PreAd() {
           mr={3}
         />
         <Button 
-          text="Publicar"
-          onPress={handleSubmitAdForm}
+          text={params.action === 'create' ? "Publicar" : "Salvar"}
+          onPress={params.action === 'create' ? handleCreateAd : handleEditAd}
           flex={1} 
+          isLoading={isSubmittingForm}
           buttonColor="light-blue" 
           icon={<Tag size={20} color={colors.gray[100]}/>}
         />

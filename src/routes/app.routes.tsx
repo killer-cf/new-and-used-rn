@@ -16,7 +16,10 @@ type AppRoutes = {
   logout: undefined
   my_ads: undefined
   ad_form?: AdFormData
-  pre_ad: AdFormData
+  pre_ad: {
+    data: AdFormData,
+    action: 'edit' | 'create'
+  }
 }
 
 export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>
