@@ -32,121 +32,100 @@ export function PreAd() {
   const { images, name, description, state, price, accept_trade, payment_methods, id } = params.data
 
   async function handleCreateAd() {
-    const product = {
-      name,
-      description,
-      is_new: state === 'new_product' ? true : false,
-      price: parseFloat(price.replace('.', '').replace(',', '.')),
-      accept_trade,
-      payment_methods
-    }
-
     try {
       setIsSubmittingForm(true)
+
+      const product = createProductData()
       const productResponse = await api.post('/products', product)
 
-      const productImagesForm = new FormData()
-      productImagesForm.append('product_id', productResponse.data.id)
-
-      images.forEach((image, index) => {
-        const imageUri = image.uri
-        const fileExtension = imageUri.split('.').pop()
-
-        const imageFile = {
-          name: `${name.replace(' ', '_')}${index}.${fileExtension}`.toLowerCase(),
-          uri: imageUri,
-          type: `image/${fileExtension}`
-        } as any
-
-        productImagesForm.append('images', imageFile)
-      })
-
-      await api.post('/products/images', productImagesForm,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
+      const productImagesForm = createProductImagesForm(productResponse.data.id)
+      await uploadProductImages(productImagesForm)
 
       setIsSubmittingForm(false)
       navigation.navigate('home')
 
-      toast.show({
-        title: 'Produto publicado com sucesso!',
-        placement: 'top',
-        bgColor: 'green.500'
-      })
-
+      showToast('Produto publicado com sucesso!', 'green.500')
     } catch (error) {
-      const isAppError = error instanceof AppError
-      const title = isAppError ? error.message : 'Não foi possível publicar seu anuncio, tente novamente mais tarde'
-
-      toast.show({
-        title,
-        placement: 'top',
-        bgColor: 'red.500'
-      })
-      setIsSubmittingForm(false)
+      handleFormSubmissionError(error, 'Não foi possível publicar seu anúncio, tente novamente mais tarde')
     }
   }
 
   async function handleEditAd() {
     if (!id) return
+
     try {
       setIsSubmittingForm(true)
-      await api.put(`/products/${id}`, {
-        name,
-        description,
-        is_new: state === 'new_product' ? true : false,
-        price: parseFloat(price.replace('.', '').replace(',', '.')),
-        accept_trade,
-        payment_methods
-      })
 
-      const productImagesForm = new FormData()
-      productImagesForm.append('product_id', id)
+      const product = createProductData()
+      await api.put(`/products/${id}`, product)
 
-      images.forEach((image, index) => {
-        if (!image.id) {
-          const imageUri = image.uri
-          const fileExtension = imageUri.split('.').pop()
-
-          const imageFile = {
-            name: `${name.replace(' ', '_')}${index}.${fileExtension}`.toLowerCase(),
-            uri: imageUri,
-            type: `image/${fileExtension}`
-          } as any
-
-          productImagesForm.append('images', imageFile)
-        }
-      })
-
-      await api.post('/products/images', productImagesForm,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
+      const productImagesForm = createProductImagesForm(id)
+      await uploadProductImages(productImagesForm)
 
       setIsSubmittingForm(false)
       navigation.navigate('my_ads')
 
-      toast.show({
-        title: 'Produto editado com sucesso!',
-        placement: 'top',
-        bgColor: 'green.500'
-      })
+      showToast('Produto editado com sucesso!', 'green.500')
     } catch (error) {
-      const isAppError = error instanceof AppError
-      const title = isAppError ? error.message : 'Não foi possível editar seu anuncio, tente novamente mais tarde'
-
-      toast.show({
-        title,
-        placement: 'top',
-        bgColor: 'red.500'
-      })
-      setIsSubmittingForm(false)
+      handleFormSubmissionError(error, 'Não foi possível editar seu anuncio, tente novamente mais tarde')
     }
+  }
+
+  function createProductData() {
+    return {
+      name,
+      description,
+      is_new: state === 'new_product',
+      price: parseFloat(price.replace('.', '').replace(',', '.')),
+      accept_trade,
+      payment_methods
+    }
+  }
+
+  function createProductImagesForm(productId: string) {
+    const productImagesForm = new FormData()
+    productImagesForm.append('product_id', productId)
+  
+    images.forEach((image, index) => {
+      if (!image.id) {
+        const imageUri = image.uri
+        const fileExtension = imageUri.split('.').pop()
+  
+        const imageFile = {
+          name: `${name.replace(' ', '_')}${index}.${fileExtension}`.toLowerCase(),
+          uri: imageUri,
+          type: `image/${fileExtension}`
+        } as any
+  
+        productImagesForm.append('images', imageFile)
+      }
+    })
+
+    return productImagesForm
+  }
+
+  async function uploadProductImages(form: FormData) {
+    await api.post('/products/images', form, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+  }
+
+  function handleFormSubmissionError(error: unknown, defaultMessage: string) {
+    const isAppError = error instanceof AppError
+    const title = isAppError ? error.message : defaultMessage
+  
+    showToast(title, 'red.500')
+    setIsSubmittingForm(false)
+  }
+
+  function showToast(title: string, bgColor: string) {
+    toast.show({
+      title,
+      placement: 'top',
+      bgColor
+    })
   }
 
   function handleGoBack() {
