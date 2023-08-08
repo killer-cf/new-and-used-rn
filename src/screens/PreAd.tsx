@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Box, HStack, Heading, Image, ScrollView, Text, VStack, useTheme, useToast } from "native-base";
 import { ArrowLeft, Tag } from "phosphor-react-native";
 
@@ -11,8 +12,6 @@ import { PaymentMethod } from "@components/PaymentMethod";
 import { AppError } from "@utils/AppError";
 import { api } from "@services/api";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
-import { PaymentMethodsType } from "@dtos/PaymentMethodDTO";
-import { useState } from "react";
 
 type PreAdParams = {
   data: AdFormData,
@@ -198,7 +197,7 @@ export function PreAd() {
             Meios de pagamento:
           </Heading>
           {payment_methods.map(payment_method => (
-            <PaymentMethod key={payment_method} title={payment_method as PaymentMethodsType} />
+            <PaymentMethod key={payment_method} title={payment_method} />
           ))}
         </VStack>
       </ScrollView>

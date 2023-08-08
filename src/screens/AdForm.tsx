@@ -17,11 +17,6 @@ import { api } from "@services/api";
 import { AppError } from "@utils/AppError";
 import { PaymentMethodsType } from "@dtos/PaymentMethodDTO";
 
-type AdFormParams = {
-  id: string
-  name: string
-}
-
 export type PhotoAdFormType = {
   id: string | null | undefined
   uri: string
@@ -53,13 +48,13 @@ export function AdForm() {
   const route = useRoute()
   const params = route.params as AdFormData
 
-  const { control, handleSubmit, reset, clearErrors, setValue, formState: { errors, isSubmitting } } = useForm<AdFormData>({
+  const { control, handleSubmit, reset, clearErrors, setValue, formState: { errors } } = useForm<AdFormData>({
     resolver: yupResolver(adFormSchema),
     values: {
       id: params?.id ?? null,
       name: params?.name ?? '',
       description: params?.description ?? '',
-      price: formatCurrency(params?.price) ?? '0,00',
+      price: formatCurrency(params?.price ?? '0') ?? '0,00',
       state: params?.state ?? 'new_product',
       accept_trade: params?.accept_trade ?? false,
       payment_methods: params?.payment_methods ?? [],
@@ -146,6 +141,11 @@ export function AdForm() {
         bgColor: 'red.500'
       })
     }
+  }
+
+  function handleCancel() {
+    reset()
+    navigation.goBack()
   }
   
   useFocusEffect(useCallback(() => {
@@ -377,8 +377,8 @@ export function AdForm() {
         />
 
         <HStack mt={12}>
-          <Button text="Cancelar" buttonColor="white-gray" flex={1} mr={3}/>
-          <Button text="Avançar" isLoading={isSubmitting} buttonColor="gray" flex={1} onPress={handleSubmit(handleGoPreview)}/>
+          <Button text="Cancelar" onPress={handleCancel} buttonColor="white-gray" flex={1} mr={3}/>
+          <Button text="Avançar" buttonColor="gray" flex={1} onPress={handleSubmit(handleGoPreview)}/>
         </HStack>
       </ScrollView>
     </VStack>
