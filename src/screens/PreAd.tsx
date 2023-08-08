@@ -60,7 +60,9 @@ export function PreAd() {
       await api.put(`/products/${id}`, product)
 
       const productImagesForm = createProductImagesForm(id)
-      await uploadProductImages(productImagesForm)
+      if (productImagesForm.getAll('images').length > 0) {
+        await uploadProductImages(productImagesForm)
+      }
 
       setIsSubmittingForm(false)
       navigation.navigate('my_ads')
@@ -76,7 +78,7 @@ export function PreAd() {
       name,
       description,
       is_new: state === 'new_product',
-      price: parseFloat(price.replace('.', '').replace(',', '.')),
+      price: parseFloat(price.replaceAll('.', '').replace(',', '')),
       accept_trade,
       payment_methods
     }
@@ -109,7 +111,7 @@ export function PreAd() {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
-    });
+    })
   }
 
   function handleFormSubmissionError(error: unknown, defaultMessage: string) {
