@@ -1,17 +1,18 @@
 import { useState } from "react";
 import { Box, HStack, Heading, Image, ScrollView, Text, VStack, useTheme, useToast } from "native-base";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { ArrowLeft, Tag } from "phosphor-react-native";
 
+import { PaymentMethod } from "@components/PaymentMethod";
 import { MultiStep } from "@components/MultiStep";
 import { UserAvatar } from "@components/UserAvatar";
 import { Tag as TagF } from "@components/Tag";
 import { Button } from "@components/Button";
-import { useNavigation, useRoute } from "@react-navigation/native";
 import { AdFormData } from "./AdForm";
-import { PaymentMethod } from "@components/PaymentMethod";
 import { AppError } from "@utils/AppError";
 import { api } from "@services/api";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
+import { useAuth } from "@hooks/useAuth";
 
 type PreAdParams = {
   data: AdFormData,
@@ -24,6 +25,7 @@ export function PreAd() {
   const { colors } = useTheme()
   const route = useRoute()
   const toast = useToast()
+  const { user } = useAuth()
   const navigation = useNavigation<AppNavigatorRoutesProps>()
 
   const params = route.params as PreAdParams
@@ -41,7 +43,7 @@ export function PreAd() {
       await uploadProductImages(productImagesForm)
 
       setIsSubmittingForm(false)
-      navigation.navigate('home')
+      navigation.navigate('my_ads')
 
       showToast('Produto publicado com sucesso!', 'green.500')
     } catch (error) {
@@ -161,16 +163,16 @@ export function PreAd() {
         <VStack mt={5} px={6}>
           <HStack mb={6} alignItems={"center"}>
             <UserAvatar
-              source={{ uri: 'https://github.com/killer-cf.png'}}
+              source={{ uri: `${api.defaults.baseURL}/images/${user.avatar}` }}
               siz="sm"
               mr={2}
             />
             <Text color={"gray.600"} fontSize={'sm'}>
-              Kilder Filho
+              {user.name}
             </Text>
           </HStack>
 
-          <TagF title="NOVO" alignSelf={'start'}/>
+          <TagF title={state === 'new_product' ? 'NOVO' : 'USADO' } alignSelf={'start'}/>
           <HStack justifyContent={"space-between"} alignItems={"center"}>
             <Heading fontFamily={"heading"} fontSize={"xl"} color={"gray.700"} my={2}>
               {name}
@@ -205,6 +207,7 @@ export function PreAd() {
         <Button 
           text="Voltar e editar" 
           onPress={handleGoBack}
+          isDisabled={isSubmittingForm}
           flex={1} 
           buttonColor="white-gray" 
           icon={<ArrowLeft size={20} />} 

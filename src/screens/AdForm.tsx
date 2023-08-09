@@ -145,6 +145,8 @@ export function AdForm() {
 
   function handleCancel() {
     reset()
+    setPhotos([])
+
     navigation.goBack()
   }
   
@@ -155,7 +157,7 @@ export function AdForm() {
 
   return (
     <VStack bg={"gray.200"} safeAreaTop flex={1} px={6} pt={5} >
-      <Header title={`${params ? 'Editar' : 'Criar'} anúncio`} />
+      <Header title={`${params?.id ? 'Editar' : 'Criar'} anúncio`} />
 
       <ScrollView contentContainerStyle={{ paddingBottom: 40}} showsVerticalScrollIndicator={false}>
         <Heading fontFamily={"heading"} fontSize={'md'} color={"gray.600"} mt={6} mb={1}>
