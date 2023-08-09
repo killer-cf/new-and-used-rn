@@ -30,6 +30,11 @@ export function Filters({ onCloseModal, onSetFilter }: Props) {
 
   const { colors } = useTheme()
 
+  function resetFilters() {
+    onSetFilter({} as FilterParamsData)
+    onCloseModal()
+  }
+
   async function handleFilter({accept_trade, state, payment_methods}: FilterFormData) {
     const params = {
       accept_trade,
@@ -108,7 +113,7 @@ export function Filters({ onCloseModal, onSetFilter }: Props) {
       />
 
       <HStack mb={5}>
-        <Button text={'Resetar filtros'} flex={1} mr={3} buttonColor="white-gray"/>
+        <Button text={'Resetar filtros'} onPress={resetFilters} flex={1} mr={3} buttonColor="white-gray"/>
         <Button text={'Aplicar filtros'} onPress={handleSubmit(handleFilter)} flex={1} buttonColor="gray"/>
       </HStack>
     </VStack>
