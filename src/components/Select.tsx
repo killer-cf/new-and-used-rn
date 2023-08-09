@@ -52,10 +52,10 @@ export function Select({ selectOptions, defaultOption, ...rest}: Props) {
         <VStack position={"absolute"} top={10} w={SELECT_WIDTH} bg={"gray.100"} rounded={"lg"} shadow={'4'} p={3}>
           {selectOptions.map(option => (
             <TouchableOpacity onPress={() => setSelectedOption(option)}>
-            <Text pb={3} fontFamily={option === selectedOption ? 'heading' : 'body'}>
-              {option}
-            </Text>
-          </TouchableOpacity>
+              <Text pb={3} fontFamily={option === selectedOption ? 'heading' : 'body'}>
+                {option}
+              </Text>
+            </TouchableOpacity>
           ))}
         </VStack>
       } 

@@ -66,7 +66,7 @@ export function AdCard({ isAdDisabled = false, adData, ...rest }: Props) {
         {
           isAdDisabled &&
           <>
-            <Box position={"absolute"} w={"full"} h={"full"} bg={"gray.700"} opacity={0.3} />         
+            <Box position={"absolute"} w={"full"} h={"full"} bg={"gray.700"} opacity={0.4} />         
             <Text 
               position={"absolute"}
               bottom={1}
