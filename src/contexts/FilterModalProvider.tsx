@@ -1,4 +1,5 @@
 import { Filters } from '@components/Filters'
+import { PaymentMethodsType } from '@dtos/PaymentMethodDTO'
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
@@ -10,6 +11,8 @@ import { ReactNode, createContext, useCallback, useMemo, useRef, useState } from
 
 type ModalContextData = {
   openModal: () => void
+  setFilter: (data: FilterParamsData) => void
+  filters: FilterParamsData
 }
 
 export const ModalContext = createContext<ModalContextData>({} as ModalContextData)
@@ -18,8 +21,15 @@ type Props = {
   children: ReactNode
 }
 
+export type FilterParamsData = {
+  is_new: boolean
+  accept_trade: boolean
+  payment_methods: PaymentMethodsType[]
+}
+
 export function FilterModalProvider({children}: Props) {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null)
+  const [filters, setFilters] = useState<FilterParamsData>({} as FilterParamsData)
 
   const snapPoints = useMemo(() => ['25%', '72%'], [])
 
@@ -43,11 +53,15 @@ export function FilterModalProvider({children}: Props) {
     []
   )
 
+  function setFilter(data: FilterParamsData) {
+    setFilters(data)
+  }
+
   const { colors } = useTheme()
 
   return (
     <BottomSheetModalProvider>
-      <ModalContext.Provider value={{openModal}}>
+      <ModalContext.Provider value={{openModal, setFilter, filters}}>
         {children}
         <BottomSheetModal
           ref={bottomSheetModalRef}
@@ -60,6 +74,7 @@ export function FilterModalProvider({children}: Props) {
         >
           <Filters
             onCloseModal={closeModal}
+            onSetFilter={setFilter}
           />
         </BottomSheetModal>
       </ModalContext.Provider>

@@ -15,6 +15,7 @@ import { AppNavigatorRoutesProps } from "@routes/app.routes";
 import { AppError } from "@utils/AppError";
 import { AdDTO } from "@dtos/AdDTO";
 import { Loading } from "@components/Loading";
+import { useAdFilter } from "@hooks/useAdFilter";
 
 export function Home() {
   const { colors } = useTheme()
@@ -22,6 +23,7 @@ export function Home() {
   const { user } = useAuth()
   const navigation = useNavigation<AppNavigatorRoutesProps>()
   const toast = useToast()
+  const { filters } = useAdFilter()
 
   const { data: ads, refetch, isInitialLoading } = useQuery<AdDTO[]>({
     queryKey: ['ads'],
@@ -44,7 +46,7 @@ export function Home() {
 
   async function fetchAds() {
     try {
-      const response = await api.get('/products')
+      const response = await api.get('/products', { params: filters })
       return response.data
     } catch (error) {
       const isAppError = error instanceof AppError
@@ -60,7 +62,7 @@ export function Home() {
 
   useFocusEffect(useCallback(() => {
     refetch()
-  }, []))
+  }, [filters]))
 
   return (
       <VStack bg={"gray.200"} safeAreaTop flex={1} px={6} pt={5} >

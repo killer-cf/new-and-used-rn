@@ -4,11 +4,11 @@ import { FilterTag } from "./FilterTag";
 import { Button } from "./Button";
 import { Controller, useForm } from "react-hook-form";
 import { PaymentMethodsType } from "@dtos/PaymentMethodDTO";
-import { AppError } from "@utils/AppError";
-import { api } from "@services/api";
+import { FilterParamsData } from "@contexts/FilterModalProvider";
 
 type Props = {
   onCloseModal: () => void
+  onSetFilter: (data: FilterParamsData) => void
 }
 
 type FilterFormData = {
@@ -17,7 +17,7 @@ type FilterFormData = {
   payment_methods: PaymentMethodsType[]
 }
 
-export function Filters({ onCloseModal}: Props) {
+export function Filters({ onCloseModal, onSetFilter }: Props) {
   const { control, handleSubmit, setValue, watch } = useForm<FilterFormData>({
     values: {
       state: 'USADO',
@@ -29,7 +29,6 @@ export function Filters({ onCloseModal}: Props) {
   const state = watch('state')
 
   const { colors } = useTheme()
-  const toast = useToast()
 
   async function handleFilter({accept_trade, state, payment_methods}: FilterFormData) {
     const params = {
@@ -38,20 +37,8 @@ export function Filters({ onCloseModal}: Props) {
       is_new: state === 'NOVO' ? true : false,
     }
 
-    try {
-      const response = await api.get('/products', { params })
-
-      console.log(response.data)
-    } catch (error) {
-      const isAppError = error instanceof AppError  
-      const title = isAppError ? error.message : 'Não foi possível buscar pelos filtros. Tente novamente mais tarde'
-      
-      toast.show({
-        title,
-        placement: 'top',
-        bgColor: 'red.500'
-      })
-    }
+    onCloseModal()
+    onSetFilter(params)
   }
 
   return (
