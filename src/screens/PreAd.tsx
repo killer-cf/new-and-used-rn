@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Box, HStack, Heading, Image, ScrollView, Text, VStack, useTheme, useToast } from "native-base";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { ArrowLeft, Tag } from "phosphor-react-native";
+import Carousel from "react-native-reanimated-carousel";
+import { Dimensions } from "react-native";
 
 import { PaymentMethod } from "@components/PaymentMethod";
 import { MultiStep } from "@components/MultiStep";
@@ -21,6 +23,7 @@ type PreAdParams = {
 
 export function PreAd() {
   const [isSubmittingForm, setIsSubmittingForm] = useState(false)
+  const [currentImage, setCurrentImage] = useState(1)
   
   const { colors } = useTheme()
   const route = useRoute()
@@ -135,6 +138,8 @@ export function PreAd() {
     navigation.navigate('ad_form', params.data)
   }
 
+  const width = Dimensions.get('window').width;
+
   return (
     <VStack safeAreaTop flex={1} bg={"lightBlue.500"}>
       <VStack bg={"lightBlue.500"} w={"full"} py={4} >
@@ -150,15 +155,25 @@ export function PreAd() {
         w={"full"}
         h={'270px'}
         >
-          <Image 
-            source={{ uri: images[0].uri }}
-            alt={name}
-            w={"full"}
-            h={"full"}
-            resizeMode="cover"
-            bg={"green.200"}
-          />
-          <MultiStep size={3} currentStep={1}/>
+          <Carousel
+            loop
+            width={width}
+            height={270}
+            data={images ?? []}
+            scrollAnimationDuration={800}
+            onSnapToItem={(index) => setCurrentImage(index + 1)}
+            renderItem={({ index }) => (
+              <Image 
+                source={{ uri: images[index].uri }}
+                alt={name}
+                w={"full"}
+                h={"full"}
+                resizeMode="cover"
+                bg={"green.200"}
+              /> 
+            )}
+            />
+          <MultiStep size={images.length} currentStep={currentImage}/>
         </Box>
         <VStack mt={5} px={6}>
           <HStack mb={6} alignItems={"center"}>
