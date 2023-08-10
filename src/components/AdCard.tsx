@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Box, Heading, IBoxProps, Image, Pressable, Skeleton, Text } from "native-base";
 
 import { Tag } from "./Tag";
@@ -8,7 +9,6 @@ import { AdDTO } from "@dtos/AdDTO";
 import { formatCurrency } from "@utils/formatCurrency";
 import { api } from "@services/api";
 import { useAuth } from "@hooks/useAuth";
-import { useState } from "react";
 
 type Props = IBoxProps & {
   isAdDisabled?: boolean

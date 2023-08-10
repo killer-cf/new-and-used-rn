@@ -1,13 +1,15 @@
+import { useCallback, useState } from "react";
 import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
-import { Box, HStack, Heading, Image, ScrollView, Skeleton, Text, VStack, useTheme, useToast } from "native-base";
+import { Box, HStack, Heading, Image, ScrollView, Skeleton, Text, VStack, View, useTheme, useToast } from "native-base";
 import { PencilSimpleLine, Power, Trash, WhatsappLogo } from "phosphor-react-native";
+import { Alert, Dimensions } from "react-native";
+import Carousel from 'react-native-reanimated-carousel'
 
 import { Header } from "@components/Header";
 import { MultiStep } from "@components/MultiStep";
 import { UserAvatar } from "@components/UserAvatar";
 import { Tag } from "@components/Tag";
 import { Button } from "@components/Button";
-import { useCallback, useState } from "react";
 import { Loading } from "@components/Loading";
 import { AppError } from "@utils/AppError";
 import { api } from "@services/api";
@@ -15,7 +17,6 @@ import { AppNavigatorRoutesProps } from "@routes/app.routes";
 import { AdDTO } from "@dtos/AdDTO";
 import { PaymentMethod } from "@components/PaymentMethod";
 import { formatCurrency } from "@utils/formatCurrency";
-import { Alert } from "react-native";
 import { useAuth } from "@hooks/useAuth";
 
 type AdParams = {
@@ -24,6 +25,7 @@ type AdParams = {
 
 export function Ad() {
   const [isLoading, setIsLoading] = useState(true)
+  const [currentImage, setCurrentImage] = useState(1)
   const [ad, setAd] = useState<AdDTO>()
   const { colors } = useTheme()
   const { user: userLogged } = useAuth()
@@ -55,8 +57,6 @@ export function Ad() {
       navigation.goBack() 
     }
   }
-
-  const productImageLoad = `${api.defaults.baseURL}/images/${ad?.product_images[0].path}`
 
   const handleImageLoad = () => {
     setImageLoaded(true)
@@ -164,6 +164,8 @@ export function Ad() {
 
   const formattedPrice = formatCurrency(ad?.price.toString() || '')
 
+  const width = Dimensions.get('window').width;
+
   return (
     <VStack bg={"gray.200"} safeAreaTop flex={1}  >
       <Header 
@@ -178,15 +180,25 @@ export function Ad() {
         w={"full"}
         h={'270px'}
         >
-          <Image 
-            source={{ uri: productImageLoad}}
-            onLoad={handleImageLoad}
-            alt={`foto do ${ad?.name}`}
-            w={"full"}
-            h={"full"}
-            resizeMode="cover"
-          />
-          <MultiStep size={3} currentStep={1}/>
+          <Carousel
+            loop
+            width={width}
+            height={270}
+            data={ad?.product_images ?? []}
+            scrollAnimationDuration={800}
+            onSnapToItem={(index) => setCurrentImage(index + 1)}
+            renderItem={({ index }) => (
+              <Image 
+                source={{ uri: `${api.defaults.baseURL}/images/${ad?.product_images[index].path}`}}
+                onLoad={handleImageLoad}
+                alt={`foto do ${ad?.name}`}
+                w={"full"}
+                h={"full"}
+                resizeMode="cover"
+              /> 
+            )}
+            />
+          <MultiStep size={ad?.product_images.length ?? 3} currentStep={currentImage}/>
           {!imageLoaded && 
             <Skeleton position={"absolute"} rounded={"lg"} w={"full"} h={"full"} bgColor={"gray.400"} zIndex={2}/>
           }
