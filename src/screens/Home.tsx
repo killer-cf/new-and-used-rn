@@ -19,6 +19,7 @@ import { useAdFilter } from "@hooks/useAdFilter";
 
 export function Home() {
   const [inputSearch, setInputSearch] = useState('')
+  const [myAdsCount, setMyAdsCount] = useState(0)
   const { colors } = useTheme()
   const { openModal } = useContext(ModalContext)
   const { user } = useAuth()
@@ -49,6 +50,27 @@ export function Home() {
     await refetch()
   }
 
+  async function handleGoMyAds() {
+    navigation.navigate('my_ads')
+  }
+
+  async function fetchMyAdsCount() {
+    try {
+      const response = await api.get('/users/products')
+      setMyAdsCount(response.data.length)
+
+    } catch (error) {
+      const isAppError = error instanceof AppError
+      const title = isAppError ? error.message : 'Não foi possível carregar o seu numero de anúncios'
+
+      toast.show({
+        title,
+        placement: 'top',
+        color: 'red.500'
+      })
+    }
+  }
+
   async function fetchAds() {
     const params = {
       ...filters,
@@ -72,7 +94,12 @@ export function Home() {
 
   useFocusEffect(useCallback(() => {
     refetch()
+    fetchMyAdsCount()
   }, [filters]))
+
+  useFocusEffect(useCallback(() => {
+    fetchMyAdsCount()
+  }, []))
 
   return (
       <VStack bg={"gray.200"} safeAreaTop flex={1} px={6} pt={5} >
@@ -99,10 +126,10 @@ export function Home() {
           <HStack px={4} py={3} bg={"blue.100"} alignItems={"center"} rounded={"lg"}>
             <Tag size={22} color={colors.blue[500]} />
             <VStack ml={4} flex={1}>
-              <Text fontFamily={"heading"} fontSize={"xl"}>4</Text>
+              <Text fontFamily={"heading"} fontSize={"xl"}>{myAdsCount}</Text>
               <Text fontFamily={"body"}>anúncios ativos</Text>
             </VStack>
-            <Pressable>
+            <Pressable onPress={handleGoMyAds}>
               <HStack alignItems={"center"}>
                 <Text color={"blue.500"} fontFamily={"heading"} mr={3}>Meus anúncios</Text>
                 <ArrowRight color={colors.blue[500]} />
