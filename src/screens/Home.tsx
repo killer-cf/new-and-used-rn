@@ -1,5 +1,5 @@
 import { useCallback, useContext, useState } from "react";
-import { Box, Divider, HStack, Heading, Pressable, ScrollView, Text, VStack, View, useTheme, useToast } from "native-base";
+import { Box, Divider, HStack, Heading, Pressable, ScrollView, Text, VStack, useTheme, useToast } from "native-base";
 import { ArrowRight, MagnifyingGlass, Plus, Sliders, Tag } from "phosphor-react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query"

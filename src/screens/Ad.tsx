@@ -1,8 +1,8 @@
 import { useCallback, useState } from "react";
 import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
-import { Box, HStack, Heading, Image, ScrollView, Skeleton, Text, VStack, View, useTheme, useToast } from "native-base";
+import { Box, HStack, Heading, Image, ScrollView, Skeleton, Text, VStack, useTheme, useToast } from "native-base";
 import { PencilSimpleLine, Power, Trash, WhatsappLogo } from "phosphor-react-native";
-import { Alert, Dimensions } from "react-native";
+import { Alert, Dimensions, Linking } from "react-native";
 import Carousel from 'react-native-reanimated-carousel'
 
 import { Header } from "@components/Header";
@@ -18,6 +18,7 @@ import { AdDTO } from "@dtos/AdDTO";
 import { PaymentMethod } from "@components/PaymentMethod";
 import { formatCurrency } from "@utils/formatCurrency";
 import { useAuth } from "@hooks/useAuth";
+import axios from "axios";
 
 type AdParams = {
   id: string
@@ -154,6 +155,17 @@ export function Ad() {
     })
   }
 
+  async function handleGoWhatsapp() {
+    const url =`https://wa.me/55${ad?.user.tel}$`
+    const supported = await Linking.canOpenURL(url)
+
+    if (supported) {
+      await Linking.openURL(url);
+    } else {
+      Alert.alert(`Não foi possível abrir`)
+    }
+  }
+
   useFocusEffect(useCallback(() => {
     getAd(params.id)
   }, [params.id]))
@@ -280,6 +292,7 @@ export function Ad() {
                 </HStack>
                 <Button 
                   text="Entrar em contato" 
+                  onPress={handleGoWhatsapp}
                   flex={1} 
                   icon={<WhatsappLogo weight="fill" color={colors.gray[200]}/> }
                 />

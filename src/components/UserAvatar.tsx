@@ -16,7 +16,7 @@ export function UserAvatar({ siz = 'md', ...rest}: Props) {
   return (
     <Avatar 
       size={siz}
-      borderWidth={'2%'} 
+      borderWidth={2} 
       borderColor={"lightBlue.500"}
       bgColor={"gray.200"}
       color={"gray.400"}
