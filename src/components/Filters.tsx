@@ -5,10 +5,12 @@ import { Button } from "./Button";
 import { Controller, useForm } from "react-hook-form";
 import { PaymentMethodsType } from "@dtos/PaymentMethodDTO";
 import { FilterParamsData } from "@contexts/FilterModalProvider";
+import { useAdFilter } from "@hooks/useAdFilter";
 
 type Props = {
   onCloseModal: () => void
   onSetFilter: (data: FilterParamsData) => void
+  filters: FilterParamsData
 }
 
 type FilterFormData = {
@@ -17,12 +19,12 @@ type FilterFormData = {
   payment_methods: PaymentMethodsType[]
 }
 
-export function Filters({ onCloseModal, onSetFilter }: Props) {
+export function Filters({ onCloseModal, onSetFilter, filters }: Props) {
   const { control, handleSubmit, setValue, watch } = useForm<FilterFormData>({
     values: {
-      state: 'USADO',
-      accept_trade: false,
-      payment_methods: []
+      state: filters?.is_new ? 'NOVO' : 'USADO',
+      accept_trade: filters?.accept_trade ?? false,
+      payment_methods: filters?.payment_methods ?? []
     }
   })
 

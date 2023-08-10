@@ -75,6 +75,7 @@ export function FilterModalProvider({children}: Props) {
           <Filters
             onCloseModal={closeModal}
             onSetFilter={setFilter}
+            filters={filters}
           />
         </BottomSheetModal>
       </ModalContext.Provider>
