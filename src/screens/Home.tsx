@@ -18,6 +18,7 @@ import { Loading } from "@components/Loading";
 import { useAdFilter } from "@hooks/useAdFilter";
 
 export function Home() {
+  const [inputSearch, setInputSearch] = useState('')
   const { colors } = useTheme()
   const { openModal } = useContext(ModalContext)
   const { user } = useAuth()
@@ -44,9 +45,18 @@ export function Home() {
     navigation.navigate('ad_form')
   }
 
+  async function handleSearch() {
+    await refetch()
+  }
+
   async function fetchAds() {
+    const params = {
+      ...filters,
+      query: inputSearch
+    }
+
     try {
-      const response = await api.get('/products', { params: filters })
+      const response = await api.get('/products', { params })
       return response.data
     } catch (error) {
       const isAppError = error instanceof AppError
@@ -105,9 +115,11 @@ export function Home() {
           </Heading>
           <Input
             placeholder="Buscar anúncio"
+            value={inputSearch}
+            onChangeText={setInputSearch}
             InputRightElement={
               <HStack h={5} alignItems={"center"}>
-                <Pressable>
+                <Pressable onPress={handleSearch}>
                   <MagnifyingGlass weight="bold" color={colors.gray[600]} />
                 </Pressable>
                 <Divider 
