@@ -1,4 +1,5 @@
 import React from "react";
+import 'react-native-gesture-handler';
 import { NativeBaseProvider } from "native-base";
 import { useFonts, Karla_400Regular, Karla_700Bold } from '@expo-google-fonts/karla';
 import { theme } from "./src/theme";

@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Box, HStack, Heading, Image, ScrollView, Skeleton, Text, VStack, useTheme, useToast } from "native-base";
 import { PencilSimpleLine, Power, Trash, WhatsappLogo } from "phosphor-react-native";
 import { Alert, Dimensions, Linking } from "react-native";
@@ -18,7 +19,6 @@ import { AdDTO } from "@dtos/AdDTO";
 import { PaymentMethod } from "@components/PaymentMethod";
 import { formatCurrency } from "@utils/formatCurrency";
 import { useAuth } from "@hooks/useAuth";
-import axios from "axios";
 
 type AdParams = {
   id: string
@@ -179,128 +179,130 @@ export function Ad() {
   const width = Dimensions.get('window').width;
 
   return (
-    <VStack bg={"gray.200"} safeAreaTop flex={1}  >
-      <Header 
-        px={6} 
-        pt={5} 
-        mb={3} 
-        iconRight={isAdOwner && <PencilSimpleLine />}
-        onPressIconRight={handleGoEditAd}
-      />
-      <ScrollView contentContainerStyle={{ paddingBottom: 30}}>
-        <Box
-        w={"full"}
-        h={'270px'}
-        >
-          <Carousel
-            loop
-            width={width}
-            height={270}
-            data={ad?.product_images ?? []}
-            scrollAnimationDuration={800}
-            onSnapToItem={(index) => setCurrentImage(index + 1)}
-            renderItem={({ index }) => (
-              <Image 
-                source={{ uri: `${api.defaults.baseURL}/images/${ad?.product_images[index].path}`}}
-                onLoad={handleImageLoad}
-                alt={`foto do ${ad?.name}`}
-                w={"full"}
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <VStack bg={"gray.200"} safeAreaTop flex={1}  >
+        <Header 
+          px={6} 
+          pt={5} 
+          mb={3} 
+          iconRight={isAdOwner && <PencilSimpleLine />}
+          onPressIconRight={handleGoEditAd}
+        />
+        <ScrollView contentContainerStyle={{ paddingBottom: 30}}>
+          <Box
+          w={"full"}
+          h={'270px'}
+          >
+            <Carousel
+              loop
+              width={width}
+              height={270}
+              data={ad?.product_images ?? []}
+              scrollAnimationDuration={800}
+              onSnapToItem={(index) => setCurrentImage(index + 1)}
+              renderItem={({ index }) => (
+                <Image 
+                  source={{ uri: `${api.defaults.baseURL}/images/${ad?.product_images[index].path}`}}
+                  onLoad={handleImageLoad}
+                  alt={`foto do ${ad?.name}`}
+                  w={"full"}
+                  h={"full"}
+                  resizeMode="cover"
+                /> 
+              )}
+              />
+            <MultiStep size={ad?.product_images.length ?? 3} currentStep={currentImage}/>
+            {!imageLoaded && 
+              <Skeleton position={"absolute"} rounded={"lg"} w={"full"} h={"full"} bgColor={"gray.400"} zIndex={2}/>
+            }
+            {
+            !ad?.is_active &&
+            <>
+              <Box position={"absolute"} w={"full"} h={"full"} bg={"gray.700"} opacity={0.5} />        
+              <Box 
+                position={"absolute"}
+                alignItems={"center"}
+                justifyContent={"center"}
+                w={'full'}
                 h={"full"}
-                resizeMode="cover"
-              /> 
-            )}
-            />
-          <MultiStep size={ad?.product_images.length ?? 3} currentStep={currentImage}/>
-          {!imageLoaded && 
-            <Skeleton position={"absolute"} rounded={"lg"} w={"full"} h={"full"} bgColor={"gray.400"} zIndex={2}/>
+              >
+                <Text color={"gray.100"} fontFamily={"heading"} fontSize={"md"}>ANÚNCIO DESATIVADO</Text> 
+              </Box>
+            </>  
           }
-          {
-          !ad?.is_active &&
-          <>
-            <Box position={"absolute"} w={"full"} h={"full"} bg={"gray.700"} opacity={0.5} />        
-            <Box 
-              position={"absolute"}
-              alignItems={"center"}
-              justifyContent={"center"}
-              w={'full'}
-              h={"full"}
-            >
-              <Text color={"gray.100"} fontFamily={"heading"} fontSize={"md"}>ANÚNCIO DESATIVADO</Text> 
-            </Box>
-          </>  
-        }
-        </Box>
-        <VStack mt={5} px={6}>
-          <HStack mb={6} alignItems={"center"}>
-            <UserAvatar
-              source={{ uri: `${api.defaults.baseURL}/images/${ad?.user.avatar}`}}
-              siz="sm"
-              mr={2}
-            />
-            <Text color={"gray.600"} fontSize={'sm'}>
-              {ad?.user.name}
-            </Text>
-          </HStack>
-
-          <Tag title="NOVO" alignSelf={'start'}/>
-          <HStack justifyContent={"space-between"} alignItems={"center"}>
-            <Heading fontFamily={"heading"} fontSize={"xl"} color={"gray.700"} my={2}>
-              {ad?.name}
-            </Heading>
-            <HStack>
-              <Text pt={1} fontSize={'sm'} color={"lightBlue.500"} fontFamily={"heading"}>R$ </Text>
-              <Heading fontSize={'xl'} color={"lightBlue.500"} fontFamily={"heading"}>{formattedPrice}</Heading>
+          </Box>
+          <VStack mt={5} px={6}>
+            <HStack mb={6} alignItems={"center"}>
+              <UserAvatar
+                source={{ uri: `${api.defaults.baseURL}/images/${ad?.user.avatar}`}}
+                siz="sm"
+                mr={2}
+              />
+              <Text color={"gray.600"} fontSize={'sm'}>
+                {ad?.user.name}
+              </Text>
             </HStack>
-          </HStack>
-          <Text color={"gray.600"} fontSize={'sm'} mb={6}>
-            {ad?.description}
-          </Text>
 
-          <HStack alignItems={"center"}>
-            <Heading fontFamily={"heading"} fontSize={'sm'} color={"gray.600"} >
-              Aceita troca?
-            </Heading>
-            <Text color={"gray.600"} fontSize={'sm'} ml={2}>
-              {ad?.accept_trade ? 'Sim' : 'Não'}
-            </Text>
-          </HStack>
-
-          <Heading fontFamily={"heading"} fontSize={'sm'} color={"gray.600"} mt={3} mb={2}>
-            Meios de pagamento:
-          </Heading>
-          {ad?.payment_methods.map(paymentMethod => (
-            <PaymentMethod key={paymentMethod.key} title={paymentMethod.key} />
-          ))}
-
-          {
-            isAdOwner ? (
-              <VStack mt={8}>
-                <Button
-                  text={ad?.is_active ? "Desativar anúncio" : "Reativar anúncio"}
-                  onPress={handleToggleActivateAd}
-                  buttonColor={ad?.is_active ? "gray" : "blue"}
-                  icon={<Power color={colors.gray[100]} />}
-                  mb={3}
-                />   
-                <Button text="Excluir anúncio" onPress={handleDeleteAd} buttonColor="white-gray" icon={<Trash />}/>
-              </VStack>
-            ) : (
-              <HStack mt={8}>
-                <HStack flex={1}>
-                  <Text pt={1} fontSize={'sm'} color={"lightBlue.500"} fontFamily={"heading"}>R$ </Text>
-                  <Heading fontSize={'2xl'} color={"lightBlue.500"} fontFamily={"heading"}>{formattedPrice}</Heading>
-                </HStack>
-                <Button 
-                  text="Entrar em contato" 
-                  onPress={handleGoWhatsapp}
-                  flex={1} 
-                  icon={<WhatsappLogo weight="fill" color={colors.gray[200]}/> }
-                />
+            <Tag title={ad?.is_new ? 'NOVO' : 'USADO'} alignSelf='flex-start' />
+            <HStack justifyContent={"space-between"} alignItems={"center"}>
+              <Heading fontFamily={"heading"} fontSize={"xl"} color={"gray.700"} my={2}>
+                {ad?.name}
+              </Heading>
+              <HStack>
+                <Text pt={1} fontSize={'sm'} color={"lightBlue.500"} fontFamily={"heading"}>R$ </Text>
+                <Heading fontSize={'xl'} color={"lightBlue.500"} fontFamily={"heading"}>{formattedPrice}</Heading>
               </HStack>
-            )
-          }    
-        </VStack>
-      </ScrollView>
-    </VStack>
+            </HStack>
+            <Text color={"gray.600"} fontSize={'sm'} mb={6}>
+              {ad?.description}
+            </Text>
+
+            <HStack alignItems={"center"}>
+              <Heading fontFamily={"heading"} fontSize={'sm'} color={"gray.600"} >
+                Aceita troca?
+              </Heading>
+              <Text color={"gray.600"} fontSize={'sm'} ml={2}>
+                {ad?.accept_trade ? 'Sim' : 'Não'}
+              </Text>
+            </HStack>
+
+            <Heading fontFamily={"heading"} fontSize={'sm'} color={"gray.600"} mt={3} mb={2}>
+              Meios de pagamento:
+            </Heading>
+            {ad?.payment_methods.map(paymentMethod => (
+              <PaymentMethod key={paymentMethod.key} title={paymentMethod.key} />
+            ))}
+
+            {
+              isAdOwner ? (
+                <VStack mt={8}>
+                  <Button
+                    text={ad?.is_active ? "Desativar anúncio" : "Reativar anúncio"}
+                    onPress={handleToggleActivateAd}
+                    buttonColor={ad?.is_active ? "gray" : "blue"}
+                    icon={<Power color={colors.gray[100]} />}
+                    mb={3}
+                  />   
+                  <Button text="Excluir anúncio" onPress={handleDeleteAd} buttonColor="white-gray" icon={<Trash />}/>
+                </VStack>
+              ) : (
+                <HStack mt={8}>
+                  <HStack flex={1}>
+                    <Text pt={1} fontSize={'sm'} color={"lightBlue.500"} fontFamily={"heading"}>R$ </Text>
+                    <Heading fontSize={'2xl'} color={"lightBlue.500"} fontFamily={"heading"}>{formattedPrice}</Heading>
+                  </HStack>
+                  <Button 
+                    text="Entrar em contato" 
+                    onPress={handleGoWhatsapp}
+                    flex={1} 
+                    icon={<WhatsappLogo weight="fill" color={colors.gray[200]}/> }
+                  />
+                </HStack>
+              )
+            }    
+          </VStack>
+        </ScrollView>
+      </VStack>
+    </GestureHandlerRootView>
   )
 }

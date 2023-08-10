@@ -1,13 +1,14 @@
+import { ReactNode, createContext, useCallback, useMemo, useRef, useState } from 'react'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { Filters } from '@components/Filters'
 import { PaymentMethodsType } from '@dtos/PaymentMethodDTO'
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
   BottomSheetModalProvider,
-  useBottomSheet,
 } from '@gorhom/bottom-sheet'
+
 import { useTheme } from 'native-base'
-import { ReactNode, createContext, useCallback, useMemo, useRef, useState } from 'react'
 
 type ModalContextData = {
   openModal: () => void
@@ -60,25 +61,27 @@ export function FilterModalProvider({children}: Props) {
   const { colors } = useTheme()
 
   return (
-    <BottomSheetModalProvider>
-      <ModalContext.Provider value={{openModal, setFilter, filters}}>
-        {children}
-        <BottomSheetModal
-          ref={bottomSheetModalRef}
-          index={1}
-          snapPoints={snapPoints}
-          backdropComponent={renderBackdrop}
-          backgroundStyle={{ backgroundColor: colors.gray[200]}}
-          handleIndicatorStyle={{ width: 56, backgroundColor: colors.gray[400], marginTop: 8}}
-          style={{ zIndex: 20}}
-        >
-          <Filters
-            onCloseModal={closeModal}
-            onSetFilter={setFilter}
-            filters={filters}
-          />
-        </BottomSheetModal>
-      </ModalContext.Provider>
-    </BottomSheetModalProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <BottomSheetModalProvider>
+        <ModalContext.Provider value={{openModal, setFilter, filters}}>
+          {children}
+          <BottomSheetModal
+            ref={bottomSheetModalRef}
+            index={1}
+            snapPoints={snapPoints}
+            backdropComponent={renderBackdrop}
+            backgroundStyle={{ backgroundColor: colors.gray[200]}}
+            handleIndicatorStyle={{ width: 56, backgroundColor: colors.gray[400], marginTop: 8}}
+            style={{ zIndex: 20}}
+          >
+            <Filters
+              onCloseModal={closeModal}
+              onSetFilter={setFilter}
+              filters={filters}
+            />
+          </BottomSheetModal>
+        </ModalContext.Provider>
+      </BottomSheetModalProvider>
+    </GestureHandlerRootView>
   )
 }
